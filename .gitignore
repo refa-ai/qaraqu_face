@@ -1,0 +1,36 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# IDE / local
+.cursor/
+*.swp
+.DS_Store
+
+# Runtime data (models, gallery, DB, snapshots)
+data/models/
+data/gallery/
+data/gallery_backup/
+data/guests/
+data/snapshots/
+data/*.db
+data/*.db-*
+data/crash_trace.log
+data/gallery_rebuild_report.json
+data/cameras.json
+
+# Keep structure placeholders
+!data/floorplans/
+!data/floorplans/**
+
+# Logs / temp
+*.log
+tmp/
+.cache/
+
+# nested git backups
+.git.bak/

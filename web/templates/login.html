@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ product }} · вход</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent: {{ accent|default('#3db8ff') }};
+  --ink:#e9eef5; --muted:#8a96a8;
+  --panel:rgba(12,16,22,.78); --line:rgba(255,255,255,.1);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  color:var(--ink);
+  font:15px/1.45 "IBM Plex Sans",system-ui,sans-serif;
+  background:
+    radial-gradient(900px 500px at 12% 0%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 60%),
+    linear-gradient(160deg,#07090d 0%,#10151d 45%,#0a0e14 100%);
+  display:grid; place-items:center; padding:24px;
+}
+.card{
+  width:min(420px,100%);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:28px 26px 24px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+.brand{font-family:Syne,sans-serif;font-weight:800;font-size:26px;letter-spacing:.04em;margin:0}
+.slogan{margin:6px 0 22px;color:var(--muted);font-size:13px}
+label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+input{
+  width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);
+  background:#0b1017;color:var(--ink);font:inherit;margin-bottom:14px
+}
+input:focus{outline:none;border-color:var(--accent)}
+button{
+  width:100%;margin-top:6px;padding:12px;border:0;border-radius:10px;cursor:pointer;
+  background:var(--accent);color:#061018;font:600 14px Syne,sans-serif;letter-spacing:.06em
+}
+.err{color:#ff8e8e;font-size:13px;margin:0 0 12px;min-height:1.2em}
+.hint{margin-top:16px;font-size:11px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+  <form class="card" method="post" action="/login" autocomplete="on">
+    <h1 class="brand">{{ product }}</h1>
+    <p class="slogan">{{ slogan }}</p>
+    {% if error %}<p class="err">{{ error }}</p>{% else %}<p class="err"></p>{% endif %}
+    <label for="username">Логин</label>
+    <input id="username" name="username" required autofocus autocomplete="username">
+    <label for="password">Пароль</label>
+    <input id="password" name="password" type="password" required autocomplete="current-password">
+    <button type="submit">Войти</button>
+    <p class="hint">UI этого воркера. API для Portal без cookie.</p>
+  </form>
+</body>
+</html>

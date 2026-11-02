@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QARAQU FACE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#fb7185; /* FINDFACE faces */
+  --bg:#0a0c10; --panel:#12161d; --line:#2a3140; --text:#e8edf4; --muted:#8b95a8;
+  --ok:#3dd68c; --alarm:#ff5d5d; --warn:#e8b84a;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:
+  radial-gradient(1000px 480px at 0% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 55%),
+  linear-gradient(165deg,#080a0e,#12161d 50%,#0a0c10);
+  color:var(--text);font:13px/1.45 "IBM Plex Sans",system-ui,sans-serif}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(10,12,16,.85);backdrop-filter:blur(8px)}
+.brand{font-family:Syne,sans-serif;font-weight:800;letter-spacing:.06em;font-size:17px}
+.brand span{color:var(--accent)}
+.slogan{font-size:11px;color:var(--muted);margin-top:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:0;background:#1c222c;color:var(--text);padding:.65rem 1rem;cursor:pointer;font:inherit;font-weight:500;box-shadow:0 1px 0 rgba(255,255,255,.06);transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.btn.ok{background:#163024;color:#9fe7c2}
+.btn.accent{background:color-mix(in srgb, var(--accent) 28%, #1c222c);color:#ffe4e8}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.wide{width:100%;padding:1.1rem;font-family:Syne,sans-serif;font-weight:700;font-size:14px;letter-spacing:.04em;background:#161b23}
+.main{display:grid;grid-template-columns:280px 1fr 300px;gap:12px;padding:12px 14px;min-height:0}
+@media(max-width:1100px){.main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto}
+.card h3{margin:0 0 10px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:Syne,sans-serif}
+.hint{font-size:11px;color:var(--muted);margin:4px 0 8px}
+label{display:block;font-size:11px;color:var(--muted);margin:0 0 4px}
+select,input[type=text],input[type=file],input[type=number]{width:100%;background:#181d27;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
+.field{margin:0 0 10px}
+.stage{position:relative;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;width:100%;aspect-ratio:16/9;margin:0 0 10px}
+.stage img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.stage .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);padding:24px;text-align:center}
+.meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+code{font-family:"IBM Plex Mono",monospace;background:#1a2030;padding:1px 6px;border-radius:4px}
+.meter{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#0e1218;margin:0 0 8px}
+.meter b{font-family:Syne,sans-serif;font-size:12px;letter-spacing:.04em}
+.lic-pill{font-size:11px;color:var(--muted);margin:8px 0 0}
+.lic-pill b{color:var(--ok)}
+.list{max-height:48vh;overflow:auto}
+.item{border-bottom:1px solid var(--line);padding:8px 0}
+.item b{color:#cfe8ff}
+.person{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px;margin-bottom:6px;background:#0e1218}
+.person .ph{width:40px;height:40px;border-radius:6px;background:#181d27;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;flex-shrink:0}
+.tabs{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+pre{white-space:pre-wrap;word-break:break-word;font:11px/1.4 "IBM Plex Mono",monospace;color:var(--muted);margin:0;max-height:28vh;overflow:auto}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="top">
+  <div>
+    <div class="brand">QARAQU <span>FACE</span></div>
+    <div class="slogan">Око во тьме · видит скрытое</div>
+  </div>
+  <div class="row">
+    <span id="status" style="color:var(--muted)">…</span>
+  </div>
+</div>
+
+<div class="main">
+  <aside class="card">
+    <h3>Сервис</h3>
+    <div class="tabs">
+      <button class="btn wide" type="button" onclick="showPane('detect')">Проверка фото</button>
+      <button class="btn wide" type="button" onclick="showPane('gallery')">Картотека</button>
+      <button class="btn wide" type="button" onclick="showPane('license')">Лицензия</button>
+    </div>
+    <div class="meter"><b>Detect</b><span id="mDet">—</span></div>
+    <div class="meter"><b>Recognize</b><span id="mRec">—</span></div>
+    <div class="lic-pill" id="licPill"><b>лицензия:</b> …</div>
+    <div class="hint" style="margin-top:12px">Без портала · порт 5020 · эталон YOLO FINDFACE</div>
+  </aside>
+
+  <section class="card">
+    <div id="paneDetect">
+      <h3>Проверка модели</h3>
+      <p class="hint">Загрузите кадр — детекция (FINDFACE yolov11n-face) и при желании идентификация по галерее.</p>
+      <div class="row" style="align-items:flex-end;margin-bottom:10px">
+        <div class="field" style="flex:1;min-width:180px;margin:0">
+          <label>Фото</label>
+          <input id="file" type="file" accept="image/*">
+        </div>
+        <div class="field" style="width:100px;margin:0">
+          <label>conf</label>
+          <input id="conf" type="number" min="0.05" max="0.95" step="0.05" value="0.25">
+        </div>
+        <button class="btn accent" type="button" id="btnDet">Detect + ID</button>
+        <button class="btn" type="button" id="btnOnly">Только detect</button>
+      </div>
+      <div class="stage">
+        <div class="empty" id="stageEmpty">Результат появится здесь</div>
+        <img id="preview" alt="preview" class="hidden">
+      </div>
+      <div class="meta" id="detMeta"></div>
+      <pre id="out"></pre>
+    </div>
+
+    <div id="paneGallery" class="hidden">
+      <h3>Картотека</h3>
+      <p class="hint">Enroll: фото лица или полный кадр (возьмём самое крупное лицо).</p>
+      <div class="row" style="align-items:flex-end;margin-bottom:10px">
+        <div class="field" style="flex:1;min-width:140px;margin:0">
+          <label>Имя</label>
+          <input id="name" type="text" placeholder="Иван">
+        </div>
+        <div class="field" style="flex:1;min-width:160px;margin:0">
+          <label>Фото</label>
+          <input id="enrollFile" type="file" accept="image/*">
+        </div>
+        <button class="btn accent" type="button" id="btnEnroll">Enroll</button>
+        <button class="btn" type="button" id="btnGal">Обновить</button>
+      </div>
+      <div class="list" id="galList"></div>
+      <pre id="galOut"></pre>
+    </div>
+
+    <div id="paneLicense" class="hidden">
+      <h3>Лицензия</h3>
+      <p class="hint">Сейчас заглушка — лимит не применяется. Позже подключим remote/file.</p>
+      <button class="btn" type="button" id="btnLic">Обновить статус</button>
+      <pre id="licOut" style="margin-top:12px"></pre>
+    </div>
+  </section>
+
+  <aside class="card">
+    <h3>События</h3>
+    <div class="list" id="hits">
+      <div class="hint-big hint">После detect здесь появятся лица / совпадения</div>
+    </div>
+  </aside>
+</div>
+
+<script>
+function showPane(name){
+  ['Detect','Gallery','License'].forEach(n=>{
+    document.getElementById('pane'+n).classList.toggle('hidden', n.toLowerCase()!==name);
+  });
+}
+
+async function refreshHealth(){
+  try{
+    const d=await (await fetch('/api/health')).json();
+    document.getElementById('status').textContent = d.ok ? 'online · v'+d.version : 'offline';
+    document.getElementById('mDet').textContent = (d.detect_weights||'').split('/').pop() || '—';
+    document.getElementById('mRec').textContent = d.recognize || '—';
+    const lic=d.license||{};
+    const pill=document.getElementById('licPill');
+    pill.innerHTML = '<b>лицензия:</b> '+(lic.state||'?')+(lic.ok?' · ok':' · fail');
+  }catch(e){
+    document.getElementById('status').textContent='offline';
+  }
+}
+
+async function detect(identify){
+  const f=document.getElementById('file').files[0];
+  if(!f){ document.getElementById('out').textContent='Выберите фото'; return; }
+  const fd=new FormData(); fd.append('file', f);
+  const conf=document.getElementById('conf').value;
+  const r=await fetch('/api/detect?identify='+identify+'&conf='+encodeURIComponent(conf),{method:'POST',body:fd});
+  const d=await r.json();
+  document.getElementById('out').textContent=JSON.stringify({faces:d.faces,items:d.items},null,2);
+  document.getElementById('detMeta').textContent = (d.faces||0)+' лиц';
+  const img=document.getElementById('preview');
+  const empty=document.getElementById('stageEmpty');
+  if(d.preview_jpeg_b64){
+    img.src='data:image/jpeg;base64,'+d.preview_jpeg_b64;
+    img.classList.remove('hidden');
+    empty.classList.add('hidden');
+  }
+  const hits=document.getElementById('hits');
+  hits.innerHTML='';
+  (d.items||[]).forEach((it,i)=>{
+    const id=it.identity||{};
+    const name=id.matched?id.name:'unknown';
+    const score=id.score!=null?id.score.toFixed(3):(it.score||0).toFixed(2);
+    const el=document.createElement('div');
+    el.className='item';
+    el.innerHTML='<div class="person"><div class="ph">#'+(i+1)+'</div><div><b>'+name+'</b><div class="hint">det '+ (it.score||0).toFixed(2)+' · id '+score+'</div></div></div>';
+    hits.appendChild(el);
+  });
+  if(!(d.items||[]).length) hits.innerHTML='<div class="hint">Лиц не найдено</div>';
+}
+
+document.getElementById('btnDet').onclick=()=>detect(true);
+document.getElementById('btnOnly').onclick=()=>detect(false);
+
+document.getElementById('btnEnroll').onclick=async()=>{
+  const name=document.getElementById('name').value.trim();
+  const f=document.getElementById('enrollFile').files[0];
+  if(!name||!f){ document.getElementById('galOut').textContent='Нужны имя и фото'; return; }
+  const fd=new FormData(); fd.append('name',name); fd.append('file',f);
+  const d=await (await fetch('/api/enroll',{method:'POST',body:fd})).json();
+  document.getElementById('galOut').textContent=JSON.stringify(d,null,2);
+  loadGallery();
+};
+
+async function loadGallery(){
+  const d=await (await fetch('/api/gallery')).json();
+  const box=document.getElementById('galList');
+  box.innerHTML='';
+  (d.people||[]).forEach(p=>{
+    const el=document.createElement('div');
+    el.className='person';
+    el.innerHTML='<div class="ph">ID</div><div><b>'+p+'</b></div>';
+    box.appendChild(el);
+  });
+  if(!(d.people||[]).length) box.innerHTML='<div class="hint">Картотека пуста</div>';
+  document.getElementById('galOut').textContent=JSON.stringify(d,null,2);
+}
+document.getElementById('btnGal').onclick=loadGallery;
+
+document.getElementById('btnLic').onclick=async()=>{
+  const d=await (await fetch('/api/license')).json();
+  document.getElementById('licOut').textContent=JSON.stringify(d,null,2);
+  refreshHealth();
+};
+
+refreshHealth();
+</script>
+</body>
+</html>

@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QARAQU FACE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#fb7185;
+  --bg:#0a0c10; --panel:#12161d; --line:#2a3140; --text:#e8edf4; --muted:#8b95a8;
+  --ok:#3dd68c; --alarm:#ff5d5d; --warn:#e8b84a; --unk:#fb923c;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:
+  radial-gradient(1000px 480px at 0% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 55%),
+  linear-gradient(165deg,#080a0e,#12161d 50%,#0a0c10);
+  color:var(--text);font:13px/1.45 "IBM Plex Sans",system-ui,sans-serif}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(10,12,16,.85);backdrop-filter:blur(8px)}
+.brand{font-family:Syne,sans-serif;font-weight:800;letter-spacing:.06em;font-size:17px}
+.brand span{color:var(--accent)}
+.slogan{font-size:11px;color:var(--muted);margin-top:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:0;background:#1c222c;color:var(--text);padding:.65rem 1rem;cursor:pointer;font:inherit;font-weight:500;box-shadow:0 1px 0 rgba(255,255,255,.06);transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.btn.ok{background:#163024;color:#9fe7c2}
+.btn.danger{background:#2a1518;color:#fecaca}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.wide{width:100%;padding:1.25rem;font-family:Syne,sans-serif;font-weight:700;font-size:15px;letter-spacing:.04em;background:#161b23}
+.btn.wide.ok{background:#163024}
+.btn.ico{min-width:52px;padding:0;align-self:stretch}
+.btn.sm{padding:.4rem .6rem;font-size:12px}
+.cp-tiles{display:flex;flex-direction:column;gap:.85rem}
+.cam-row{display:flex;gap:8px;align-items:stretch}
+.cp-tile{position:relative;display:flex;align-items:center;gap:1rem;flex:1;width:100%;padding:1.25rem 1.1rem;border:0;border-radius:0;background:#1c222c;box-shadow:0 1px 0 rgba(255,255,255,.06);text-align:left;cursor:pointer;overflow:hidden;color:var(--text);transition:transform .15s ease,box-shadow .15s ease}
+.cp-tile:hover,.cp-tile:focus-visible{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);outline:none}
+.cp-tile__glyph{flex-shrink:0;color:var(--accent);transition:opacity .18s ease}
+.cp-tile__swap{position:relative;flex:1;min-width:0;min-height:2.6em}
+.cp-tile__info{display:flex;flex-direction:column;gap:.3rem;transition:opacity .18s ease,transform .18s ease}
+.cp-tile__name{font-size:16px;font-weight:500;letter-spacing:-.02em;line-height:1.25;color:var(--text)}
+.cp-tile__host{font-size:12px;color:var(--muted)}
+.cp-tile__open{position:absolute;inset:0;display:flex;align-items:center;font-size:16px;font-weight:500;letter-spacing:-.02em;color:var(--accent);opacity:0;transform:translateY(4px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.cp-tile:hover .cp-tile__info,.cp-tile:focus-visible .cp-tile__info{opacity:0;transform:translateY(-4px)}
+.cp-tile:hover .cp-tile__open,.cp-tile:focus-visible .cp-tile__open{opacity:1;transform:translateY(0)}
+.cp-tile:hover .cp-tile__glyph,.cp-tile:focus-visible .cp-tile__glyph{opacity:.35}
+.dot{width:8px;height:8px;border-radius:50%;background:#3d465a;flex-shrink:0}
+.dot.on{background:var(--ok);box-shadow:0 0 8px rgba(61,214,140,.45)}
+.det-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:68px;padding:.7rem .45rem;background:#1c222c;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;user-select:none;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.det-toggle input{width:16px;height:16px;accent-color:var(--ok);cursor:pointer}
+.det-toggle.on{color:var(--ok);background:#163024}
+.main{display:grid;grid-template-columns:280px 1fr 320px;gap:12px;padding:12px 14px;min-height:0;flex:1}
+.main > section{min-height:0;display:flex;flex-direction:column}
+#centerHome.show{display:flex;flex:1;flex-direction:column;min-height:0}
+@media(max-width:1100px){.main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto}
+.card h3{margin:0 0 10px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:Syne,sans-serif}
+.hint{font-size:11px;color:var(--muted);margin:4px 0 8px}
+select,input[type=text],input[type=file],input[type=url],input[type=number]{width:100%;background:#181d27;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px}
+.stage{position:relative;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;width:min(100%,calc(min(56vh,540px)*16/9));aspect-ratio:16/9;margin-inline:auto}
+.stage:fullscreen{width:100vw;height:100vh;max-width:none;aspect-ratio:auto;border-radius:0}
+.fs-btn{position:absolute;left:10px;bottom:10px;z-index:6;min-width:40px;padding:.4rem .6rem}
+.stage img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:fill;background:#000}
+.meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.bbox-leg{display:inline-flex;align-items:center;gap:6px}
+.bbox-leg i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.bbox-leg i.p{background:#a0a0a0}
+.bbox-leg i.u{background:var(--unk)}
+.bbox-leg i.k{background:#4ade80}
+code{font-family:"IBM Plex Mono",monospace;background:#1a2030;padding:1px 6px;border-radius:4px}
+.list{max-height:calc(100vh - 160px);overflow:auto}
+.item{border-bottom:1px solid var(--line);padding:8px 0}
+.item b{color:#cfe8ff}
+.item.click{cursor:pointer}
+.item.click:hover{background:#161b23}
+.item.sel{background:#161b23;box-shadow:inset 3px 0 0 var(--accent)}
+.det{display:flex;gap:10px;align-items:flex-start}
+.det-photos{display:flex;gap:6px;flex-shrink:0}
+.det-shot{width:64px;text-align:center}
+.det-shot img{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#000;border:1px solid var(--line);display:block}
+.det-shot .ph{width:64px;height:64px;border-radius:8px;background:#0e1218;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px}
+.det-shot span{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.det-meta{min-width:0;flex:1}
+.pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-left:4px;vertical-align:middle}
+.pill.known{background:#163024;color:#9fe7c2}
+.pill.unknown{background:#3a2412;color:#fed7aa}
+.pill.pending{background:#1c222c;color:var(--muted)}
+.unk{border:1px solid var(--line);border-radius:12px;padding:10px;margin:0 0 10px;background:#0e1218}
+.unk-top{display:flex;gap:10px;align-items:flex-start}
+.unk-top img{width:72px;height:72px;object-fit:cover;border-radius:8px;background:#000;border:1px solid var(--line)}
+.unk-cands,.unk-hits{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.unk-cands label,.unk-hits label{display:flex;gap:8px;align-items:center}
+.unk-cands img,.unk-hits img{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#111;border:1px solid var(--line);flex-shrink:0}
+.unk-ph{width:64px;height:64px;border-radius:8px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;flex-shrink:0}
+.unk-cands b,.unk-hits b{font-variant-numeric:tabular-nums}
+.unk-own{display:flex;gap:6px;align-items:center;margin-top:6px}
+.unk-own .unk-find{flex:1;margin:0;min-width:0}
+.unk-menu{display:none;max-height:320px;overflow:auto;margin-top:6px;padding:6px;border:1px solid var(--line);border-radius:10px;background:#0a0d12}
+.unk-menu.open{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}
+.unk-tile{border:1px solid var(--line);background:#111;border-radius:8px;padding:4px;color:inherit;cursor:pointer;text-align:center}
+.unk-tile img,.unk-tile .unk-ph{width:100%;height:68px;object-fit:cover;border-radius:6px}
+.unk-tile .unk-ph{display:flex;align-items:center;justify-content:center}
+.unk-tile span{display:block;font-size:10px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.unk-tile.on{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}
+.unk.wrong .unk-cands{opacity:.4}
+.unk-wrong{color:var(--warn);font-size:12px;margin:6px 0 0}
+.unk-wrong:empty{display:none}
+.unk-sys{font-size:10px;color:var(--warn);letter-spacing:.03em}
+.hw{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ok)}
+.hw.warn{color:var(--warn)}.hw.hot{color:var(--alarm)}.hw.off{color:var(--muted);font-weight:500}
+.meter{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#0e1218;margin:0 0 8px}
+.meter b{font-family:Syne,sans-serif;font-size:12px;letter-spacing:.04em}
+.svc{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
+.svc .state{font-weight:600}
+.svc .state.on{color:var(--ok)}.svc .state.off{color:var(--alarm)}
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px;align-content:start;overflow:auto;flex:1;min-height:0}
+.wall-card{position:relative;background:#0e1218;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.wall-shot{position:relative;aspect-ratio:16/9;background:#000;cursor:pointer;display:block;width:100%;overflow:hidden;flex:0 0 auto;z-index:0}
+.wall-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;pointer-events:none;z-index:0}
+.wall-x{position:absolute;top:6px;right:6px;z-index:8;width:32px;height:32px;border:0;border-radius:8px;background:rgba(42,21,24,.94);color:#fecaca;cursor:pointer;font:700 16px/1 inherit;pointer-events:auto}
+.wall-x:hover{background:#5a2028}
+.wall-name{display:flex;align-items:center;gap:6px;padding:6px 8px 0;font-size:13px;font-weight:500;min-width:0;position:relative;z-index:4;background:#0e1218}
+.wall-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wall-pick{display:flex;align-items:center;flex-shrink:0;cursor:pointer}
+.wall-pick input{width:16px;height:16px;accent-color:var(--alarm);cursor:pointer;margin:0}
+.wall-acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:6px;position:relative;z-index:4;background:#0e1218;pointer-events:auto}
+.wall-acts .btn{padding:.45rem .25rem;font-size:11px;position:relative;z-index:4;pointer-events:auto}
+.cam-del{position:absolute;top:10px;right:10px;z-index:8}
+.view{display:none}
+.view.show{display:block}
+.an-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}
+@media(min-width:900px){.an-kpis.six{grid-template-columns:repeat(6,1fr)}}
+.an-kpi{background:#0e1218;border:1px solid var(--line);border-radius:10px;padding:10px}
+.an-kpi span{display:block;font-size:11px;color:var(--muted)}
+.an-kpi b{display:block;margin-top:4px;font-size:22px;font-family:Syne,sans-serif;letter-spacing:.02em}
+.charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 14px}
+@media(min-width:900px){.charts-grid{grid-template-columns:1fr 1fr}}
+.chart-box{background:#0e1218;border:1px solid var(--line);border-radius:12px;padding:10px}
+.chart-box h4{margin:0 0 8px;font-size:12px;color:var(--muted);font-weight:600}
+.chart-box canvas{width:100%!important;max-height:180px}
+.rpt-table{width:100%;border-collapse:collapse;font-size:12px;margin:0 0 14px}
+.rpt-table th,.rpt-table td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+.rpt-table th{color:var(--muted);font-weight:600;font-size:11px}
+.rpt-table tbody tr{cursor:pointer}
+.rpt-table tbody tr:hover{background:#161b23}
+.alert-row{display:grid;grid-template-columns:72px 72px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.alert-row img,.alert-row .ph{width:72px;height:72px;object-fit:cover;border-radius:8px;background:#000}
+.alert-row .ph{border:1px dashed var(--line)}
+.sys-item{margin:0 0 14px}
+.sys-item label.ttl{display:block;font-weight:600;margin:0 0 4px}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;align-content:start;overflow:auto;max-height:calc(100vh - 220px)}
+.gal-card{background:#0e1218;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.gal-card img{display:block;width:100%;height:140px;object-fit:cover;background:#000}
+.gal-card .cap{padding:8px 10px}
+.gal-card .cap .row{margin-top:8px;gap:6px}
+.gal-card .cap .btn{flex:1;padding:.5rem .4rem;font-size:12px}
+.gal-card.off img{filter:grayscale(1);opacity:.45}
+.gal-card.off{border-color:#6b4a1a}
+.gal-excl{display:flex;align-items:center;gap:6px;margin:6px 0 0;font-size:12px;color:var(--muted);cursor:pointer;user-select:none}
+.gal-excl input{width:16px;height:16px;accent-color:#e0a84a;margin:0}
+.gal-card.off .gal-excl{color:#e0a84a}
+.edit-shots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;align-items:end}
+.edit-shots figure{margin:0;background:#0e1218;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.edit-shots img{display:block;width:100%;height:120px;object-fit:cover;background:#000}
+.edit-shots figcaption{padding:4px 6px;font-size:10px;color:var(--muted);text-align:center}
+.drop{border:1px dashed var(--line);border-radius:10px;padding:12px;background:#0e1218;margin:0 0 10px}
+.drop b{display:block;margin-bottom:6px}
+.fio-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fio-grid .wide{grid-column:1/-1}
+.hint-big{padding:24px 12px;text-align:center;color:var(--muted)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+.modal-bg.show{display:flex}
+.modal{width:min(460px,100%);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.modal h3{margin:0 0 12px;font-family:Syne,sans-serif}
+.modal label{display:block;font-size:11px;color:var(--muted);margin:10px 0 4px}
+.back{margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.hidden{display:none!important}
+body.operator .admin-only{display:none!important}
+.an-nav{display:flex;flex-direction:column;gap:8px;margin:0 0 16px}
+.an-nav .btn.wide{margin:0;padding:1.1rem}
+.floor-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.floor-tabs .btn{padding:.45rem .75rem}
+.floor-wrap{background:#0e1218;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 8px}
+.floor-stage{position:relative;width:100%;height:min(68vh,600px);background:#080a0e}
+.floor-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.floor-stage canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.floor-stage.placing canvas{cursor:crosshair}
+.fp-cam{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.fp-cam span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp-cam.on span{color:var(--accent)}
+.fp-cam .muted{color:var(--muted);font-size:11px}
+.visit{display:grid;grid-template-columns:22px 1fr auto;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:12px}
+.visit i{font-style:normal;color:var(--muted);text-align:right}
+</style>
+</head>
+<body>
+<div class="top">
+  <div>
+    <div class="brand">{{ product_html|safe }}</div>
+    <div class="slogan">{{ slogan }}</div>
+  </div>
+  <div class="row">
+    <span id="status" style="color:var(--muted)">…</span>
+    <button class="btn admin-only" type="button" onclick="openAdmin()">Админ</button>
+    <form method="post" action="/logout" style="margin:0"><button class="btn" type="submit">Выйти</button></form>
+  </div>
+</div>
+<div class="main">
+  <aside class="card">
+    <div class="view" id="leftHome">
+      <h3>Сервис</h3>
+      <div class="svc">
+        <span class="state off" id="svcState">выкл</span>
+        <button class="btn" type="button" id="svcToggle" onclick="toggleService()">Включить</button>
+      </div>
+      <div class="hint" id="svcHint">распознавание лиц и трекинг движения</div>
+      <div class="meter"><b>GPU</b><span class="hw off" id="hwGpu">—</span></div>
+      <div class="meter"><b>CPU</b><span class="hw off" id="hwCpu">—</span></div>
+      <div class="meter"><b>Диск</b><span class="hw off" id="hwDisk">—</span></div>
+      <div class="an-nav" style="margin-top:16px">
+        <button class="btn wide" type="button" onclick="openStats('map')">Карта движения</button>
+        <button class="btn wide" type="button" onclick="openStats('report')">Аналитика</button>
+      </div>
+    </div>
+    <div class="view" id="leftAdmin">
+      <button class="btn back" type="button" onclick="goHome()">← Камеры</button>
+      <h3>Админ</h3>
+      <div class="an-nav">
+        <button class="btn wide" type="button" onclick="openGallery(true)">Картотека</button>
+        <button class="btn wide" type="button" onclick="openAddCam()">Добавить камеру +</button>
+        <button class="btn wide admin-only" type="button" onclick="openAdmin()">Система</button>
+        <button class="btn wide" type="button" onclick="openStats('map')">План помещения</button>
+      </div>
+    </div>
+    <div class="view" id="leftCam">
+      <button class="btn back" type="button" onclick="goHome()">← Камеры</button>
+      <h3>Настройки камеры</h3>
+      <div class="hint" id="camSetWho">выберите камеру</div>
+      <h3>Порог детекции</h3>
+      <div class="hint"><b id="detVal">38%</b></div>
+      <input type="range" id="chDet" min="5" max="95" value="38"
+        oninput="setCamSet('det_conf',+this.value,true)" onchange="setCamSet('det_conf',+this.value,false)">
+      <div class="hint">ниже — рамка ловит дальние лица, выше — меньше ложных рамок</div>
+      <h3>Порог совпадения с базой</h3>
+      <div class="hint"><b id="confVal">42%</b></div>
+      <input type="range" id="chConf" min="10" max="90" value="42"
+        oninput="setCamSet('match_threshold',+this.value,true)" onchange="setCamSet('match_threshold',+this.value,false)">
+      <div class="hint">выше — меньше ложных совпадений, но чаще «неизвестный». AdaFace: чужие с камер ≤ 0.27, свои на лице ≥ 90 px ≈ 0.5; рабочая зона 0.36–0.42, ниже 0.33 начнутся чужие имена</div>
+      <h3>Мин. размер лица, px</h3>
+      <div class="hint"><b id="minSideVal">64</b></div>
+      <input type="range" id="chMinSide" min="10" max="300" step="2" value="64"
+        oninput="setCamSet('min_face_side',+this.value,true)" onchange="setCamSet('min_face_side',+this.value,false)">
+      <div class="hint">лица мельче этого размера вообще не сравниваются с базой. Дальние камеры — ниже, камеры «спиной к камере» — повыше</div>
+      <h3>Интервал проверки, с</h3>
+      <div class="hint"><b id="intervalVal">2.0</b></div>
+      <input type="range" id="chInterval" min="0.1" max="15" step="0.1" value="2"
+        oninput="setCamSet('detect_interval',+this.value,true)" onchange="setCamSet('detect_interval',+this.value,false)">
+      <div class="hint">как часто проверять кадр, когда в кадре ничего не происходит. Меньше — меньше пропусков, больше нагрузка</div>
+      <h3>Чувствительность к движению</h3>
+      <div class="hint"><b id="motionVal">3.0</b></div>
+      <input type="range" id="chMotion" min="1" max="10" step="0.1" value="3"
+        oninput="setCamSet('motion_k',+this.value,true)" onchange="setCamSet('motion_k',+this.value,false)">
+      <div class="hint">ниже — проверка включается от weaker движения (шумнее), выше — только от явного</div>
+      <h3>Разрешение проверки</h3>
+      <div class="hint"><b id="imgszVal">1280</b></div>
+      <input type="range" id="chImgsz" min="0" max="4" step="1" value="2"
+        oninput="setCamSet('imgsz',[640,960,1280,1600,1920][+this.value],true)"
+        onchange="setCamSet('imgsz',[640,960,1280,1600,1920][+this.value],false)">
+      <div class="hint">выше — лучше находит дальние мелкие лица, но сильнее нагружает видеокарту</div>
+    </div>
+    <div class="view" id="leftGal">
+      <button class="btn back" type="button" onclick="backFromGal()">← Назад</button>
+      <h3>Добавить лицо</h3>
+      <div class="drop">
+        <b>Фото</b>
+        <input id="personFile" type="file" accept="image/*" multiple>
+        <div class="hint" style="margin:6px 0 0">можно несколько (анфас + профиль)</div>
+      </div>
+      <div class="fio-grid">
+        <input id="personLast" type="text" placeholder="Фамилия">
+        <input id="personFirst" type="text" placeholder="Имя">
+        <input id="personPat" class="wide" type="text" placeholder="Отчество (необяз.)">
+        <input id="personIin" class="wide" type="text" placeholder="ИИН (12 цифр)" maxlength="12" inputmode="numeric">
+      </div>
+      <button class="btn ok" style="width:100%;margin-top:10px" onclick="uploadPerson()">Добавить в базу</button>
+      <div id="uploadOut" class="hint" style="margin-top:8px"></div>
+      <h3 style="margin-top:16px">Поиск по фото</h3>
+      <input id="searchFile" type="file" accept="image/*">
+      <button class="btn" style="width:100%;margin-top:6px" onclick="searchFace()">Искать</button>
+      <div id="searchOut" class="hint" style="margin-top:6px"></div>
+    </div>
+    <div class="view" id="leftStats">
+      <button class="btn back" type="button" onclick="goHome()">← Камеры</button>
+      <h3>Аналитика</h3>
+      <div class="an-nav">
+        <button class="btn wide" id="navmap" type="button" onclick="setStatsKind('map')">Карта движения</button>
+        <button class="btn wide" id="navreport" type="button" onclick="setStatsKind('report')">Отчёты</button>
+        <button class="btn wide" id="navalerts" type="button" onclick="setStatsKind('alerts')">Журнал</button>
+        <button class="btn wide" id="navpassages" type="button" onclick="setStatsKind('passages')">Проходы</button>
+      </div>
+      <div class="view" id="leftpassages">
+        <h3>Роль камеры</h3>
+        <div class="hint">«вход» или «выход» — камера записывает проходы. «—» — не считает. Неизвестные тоже попадают в журнал проходов.</div>
+        <div id="passRoles" style="margin-top:8px"></div>
+        <h3 style="margin-top:14px">Поиск</h3>
+        <input id="passQ" type="text" placeholder="имя / неизвестный / камера" oninput="debounce(loadPassages)">
+      </div>
+      <div class="view" id="leftreport">
+        <h3>Интервал графика</h3>
+        <select id="rptInterval" onchange="loadReport()">
+          <option value="hour">час</option>
+          <option value="day" selected>день</option>
+          <option value="week">неделя</option>
+        </select>
+      </div>
+      <div class="view" id="leftalerts">
+        <h3>Фильтр</h3>
+        <select id="alKind" onchange="loadAlertJournal()">
+          <option value="">все</option>
+          <option value="known">из картотеки</option>
+          <option value="unknown">неизвестные</option>
+        </select>
+        <input id="alQ" type="text" placeholder="имя / ИИН / камера" oninput="debounce(loadAlertJournal)" style="margin-top:8px">
+        <div class="row" style="margin-top:10px">
+          <button class="btn" type="button" style="flex:1" onclick="exportAlerts()">CSV</button>
+          <button class="btn danger admin-only" type="button" style="flex:1" onclick="bulkDelAlerts()">Удалить выбранные</button>
+        </div>
+        <button class="btn danger wide admin-only" type="button" style="margin-top:8px" onclick="clearEventsPanel()">Очистить журнал</button>
+      </div>
+      <div class="view" id="leftmap">
+        <h3>Этаж</h3>
+        <input id="floorName" type="text" placeholder="название этажа" onchange="renameFloor()">
+        <div class="row" style="margin-top:8px">
+          <button class="btn sm" type="button" style="flex:1" onclick="addFloor()">+ этаж</button>
+          <button class="btn sm danger admin-only" type="button" style="flex:1" onclick="deleteFloor()">удалить этаж</button>
+        </div>
+        <div class="drop" style="margin-top:10px">
+          <b>План помещения</b>
+          <input id="floorFile" type="file" accept="image/*" onchange="uploadFloorPlan()">
+          <div class="hint" style="margin:6px 0 0">фото или скан плана этажа; без плана — сетка</div>
+        </div>
+        <h3>Камеры на плане</h3>
+        <div class="hint" id="floorHint">«Поставить» → клик по плану. Зелёная точка — куда смотрит камера. Маршрут — это место человека: несколько камер в один момент дают одну точку, линия между камерами не рисуется. Без направления камеры путь не строится.</div>
+        <div id="floorCamList"></div>
+        <div id="floorCamProps" class="hidden" style="margin-top:10px">
+          <h3 id="floorCamPropsTitle">Направление</h3>
+          <label class="hint">куда смотрит, ° <input id="camHeadIn" type="number" min="0" max="359" step="1" onchange="applyCamDir()"></label>
+          <label class="hint">угол обзора, ° <input id="camFovIn" type="number" min="20" max="170" step="1" onchange="applyCamDir()"></label>
+          <label class="hint">дальность, м <input id="camRangeIn" type="number" min="1" max="80" step="0.5" onchange="applyCamDir()"></label>
+        </div>
+        <label style="display:flex;gap:8px;align-items:center;margin-top:12px">
+          <input id="mapUnknown" type="checkbox" checked onchange="loadFloorTracks()"> показывать неизвестных
+        </label>
+      </div>
+    </div>
+  </aside>
+  <section>
+    <div class="view" id="centerHome">
+      <div class="row" id="wallPager" style="justify-content:space-between;align-items:center;margin:0 0 8px;gap:8px">
+        <div class="hint" id="wallPageInfo">превью до 12 камер на страницу</div>
+        <div class="row" style="gap:6px;margin:0">
+          <button class="btn sm danger admin-only" type="button" id="wallDelSel" onclick="askDeleteSelected()">Удалить выбранные</button>
+          <button class="btn sm" type="button" id="wallPrev" onclick="wallShift(-1)">←</button>
+          <button class="btn sm" type="button" id="wallNext" onclick="wallShift(1)">→</button>
+        </div>
+      </div>
+      <div class="wall" id="camList"></div>
+    </div>
+    <div class="view" id="centerCam">
+      <div class="stage" id="liveStage">
+        <img id="preview" alt="live">
+        <button class="btn danger cam-del admin-only" type="button" onclick="deleteCurrentCam()">Удалить камеру</button>
+        <button class="btn fs-btn" type="button" onclick="toggleLiveFs()" title="полный экран">⛶</button>
+      </div>
+      <div class="meta">
+        <span>FPS <code id="fps">-</code></span>
+        <span>камера <code id="camName">-</code></span>
+        <span>поток <code id="streamOpen">-</code></span>
+        <span class="bbox-leg"><i class="u"></i> лицо в кадре</span>
+        <span class="bbox-leg"><i class="k"></i> из картотеки</span>
+      </div>
+    </div>
+    <div class="view" id="centerGal">
+      <div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px;gap:8px;flex-wrap:wrap">
+        <h3 style="margin:0;font-family:Syne,sans-serif">Картотека</h3>
+        <div class="row" style="gap:8px;flex-wrap:wrap">
+          <button class="btn ok" type="button" id="galRebuildBtn" onclick="rebuildGalleryEmb()">Пересобрать эмбеддинги</button>
+          <button class="btn danger admin-only" type="button" onclick="delAllPersons()">Удалить все</button>
+        </div>
+      </div>
+      <input id="galQ" type="text" placeholder="поиск по ФИО или ИИН" oninput="debounce(loadGallery)" style="margin:0 0 10px">
+      <div class="hint" id="galHead">—</div>
+      <div class="hint" id="galRebuildOut"></div>
+      <div class="gal-grid" id="galleryList"></div>
+    </div>
+    <div class="view" id="centerStats">
+      <div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px">
+        <h3 style="margin:0;font-family:Syne,sans-serif" id="statsTitle">Карта движения</h3>
+        <div class="row" id="statsPeriod">
+          <button class="btn" type="button" data-h="1" onclick="setStatsHours(1)">час</button>
+          <button class="btn" type="button" data-h="24" onclick="setStatsHours(24)">сутки</button>
+          <button class="btn" type="button" data-h="168" onclick="setStatsHours(168)">неделя</button>
+          <button class="btn" type="button" data-h="720" onclick="setStatsHours(720)">30 дн.</button>
+        </div>
+      </div>
+      <div class="view" id="panemap">
+        <div class="floor-tabs" id="floorTabs"></div>
+        <div class="floor-wrap">
+          <div class="floor-stage" id="floorStage">
+            <img id="floorImg" alt="">
+            <canvas id="floorCanvas"></canvas>
+          </div>
+        </div>
+        <div class="hint" id="floorTrackHint"></div>
+      </div>
+      <div class="view" id="panereport">
+        <div class="an-kpis six">
+          <div class="an-kpi"><span>событий</span><b id="stHits">0</b></div>
+          <div class="an-kpi"><span>из картотеки</span><b id="stKnown">0</b></div>
+          <div class="an-kpi"><span>неизвестных</span><b id="stUnk">0</b></div>
+          <div class="an-kpi"><span>узнано</span><b id="stRate">0%</b></div>
+          <div class="an-kpi"><span>ср. сходство</span><b id="stSim">0</b></div>
+          <div class="an-kpi"><span>человек</span><b id="stPeople">0</b></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-box"><h4>События во времени</h4><canvas id="chartAlerts" height="90"></canvas></div>
+          <div class="chart-box"><h4>По часам суток</h4><canvas id="chartHour" height="90"></canvas></div>
+        </div>
+        <table class="rpt-table">
+          <thead><tr><th>Человек</th><th>ИИН</th><th>Появлений</th><th>Ср. сходство</th><th>Последний раз</th></tr></thead>
+          <tbody id="rptPeople"></tbody>
+        </table>
+      </div>
+      <div class="view" id="panealerts">
+        <div class="hint" id="alHead">—</div>
+        <div id="alList"></div>
+      </div>
+      <div class="view" id="panepassages">
+        <h4>Сводка по людям и дням</h4>
+        <table class="rpt-table">
+          <thead><tr><th>Человек</th><th>День</th><th>Приход</th><th>Уход</th><th>Сессий</th><th>Всего в объекте</th></tr></thead>
+          <tbody id="passSum"></tbody>
+        </table>
+        <h4>Журнал проходов</h4>
+        <div class="hint" id="passHead">—</div>
+        <div id="passList"></div>
+      </div>
+    </div>
+    <div class="view" id="centerAdmin">
+      <div id="adminAudit" class="hidden">
+        <div class="row" style="justify-content:space-between;align-items:center;margin:0 0 8px">
+          <h3 style="margin:0;font-family:Syne,sans-serif">Проверка картотеки</h3>
+          <button class="btn sm" type="button" onclick="loadAudit()">Обновить</button>
+        </div>
+        <div class="hint">Дубли — две карточки с одинаковым лицом: выберите, какую оставить, вторая вольётся в неё (векторы и фото переносятся). «Магниты» — карточки, которые узнаются на многих разных людях; обычно это дубль или чужое фото. Удаление и слияние только по вашей кнопке.</div>
+        <div id="auditHead" class="hint">—</div>
+        <div id="auditList"></div>
+      </div>
+      <div id="adminSys">
+      <h3 style="margin:0 0 10px;font-family:Syne,sans-serif">Система</h3>
+      <div class="sys-item">
+        <label class="ttl">Пользователи</label>
+        <div class="hint">вход в консоль. Пароль хранится как хеш, в списке его не видно.</div>
+        <div id="userList"></div>
+        <div class="row" style="margin-top:8px">
+          <input id="userName" type="text" placeholder="логин" autocomplete="off" style="flex:1">
+          <input id="userPass" type="password" placeholder="пароль" autocomplete="new-password" style="flex:1">
+          <select id="userRole" style="flex:1">
+            <option value="operator">оператор</option>
+            <option value="admin">администратор</option>
+          </select>
+          <button class="btn ok" type="button" onclick="addUser()">Добавить</button>
+        </div>
+        <div class="hint" id="userOut"></div>
+      </div>
+      <div class="sys-item">
+        <label class="ttl">Потоки и сервис</label>
+        <div class="row">
+          <button class="btn danger" type="button" onclick="stopStreams()">Остановить все потоки</button>
+          <button class="btn ok" type="button" onclick="startStreams()">Включить потоки</button>
+          <button class="btn" type="button" onclick="restartService()">Рестарт сервиса</button>
+        </div>
+        <div class="hint" id="sysActOut"></div>
+      </div>
+      <div class="hint">Пороги детекции и совпадения задаются отдельно для каждой камеры — в панели камеры.</div>
+      <div class="sys-item">
+        <label class="ttl">Детекция</label>
+        <div class="row">
+          <div style="flex:1"><div class="hint">Проверять кадр каждые N кадров</div><input id="optSkip" type="number" min="1" max="30" value="3"></div>
+          <div style="flex:1"><div class="hint">Макс. лиц на кадр</div><input id="optMaxFaces" type="number" min="1" max="50" value="10"></div>
+        </div>
+      </div>
+      <div class="sys-item">
+        <label class="ttl">Журнал событий</label>
+        <div class="hint">Повторная запись, если человека не было на камере, сек</div>
+        <input id="optCooldown" type="number" min="0" max="3600" value="60">
+        <label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input id="optKnown" type="checkbox" checked> события по людям из картотеки</label>
+        <label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input id="optUnk" type="checkbox"> события по неизвестным</label>
+        <label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input id="optSnap" type="checkbox" checked> сохранять снимок лица</label>
+        <div class="hint">Маршруты на карте пишутся всегда — и для известных, и для неизвестных.</div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ok" type="button" onclick="saveSys()">Сохранить</button>
+      </div>
+      <div class="hint" id="sysOut"></div>
+      </div>
+    </div>
+  </section>
+  <aside class="card">
+    <div class="row" style="justify-content:space-between;align-items:center;margin:0 0 8px">
+      <h3 id="rightTitle" style="margin:0">События</h3>
+      <button class="btn sm danger admin-only" type="button" id="clearEventsBtn" onclick="clearEventsPanel()">Очистить</button>
+    </div>
+    <div class="hint" style="margin:0 0 8px">
+      <span class="bbox-leg"><i class="u"></i> лицо в кадре</span>
+      <span class="bbox-leg"><i class="k"></i> из картотеки</span>
+    </div>
+    <div class="list" id="liveList"><div class="hint-big">ожидание…</div></div>
+  </aside>
+</div>
+
+<div class="modal-bg" id="addModal" onclick="if(event.target===this)closeAddCam()">
+  <div class="modal">
+    <h3 id="camModalTitle">Новая камера</h3>
+    <input type="hidden" id="editCamIndex" value="">
+    <label>Имя</label>
+    <input id="addName" type="text" placeholder="Вход / Коридор 2 этаж">
+    <label>Основной поток — детекция</label>
+    <input id="addUrl" type="text" placeholder="rtsp://… или webcam:0">
+    <label>Доп. поток — превью на главном экране</label>
+    <input id="addUrlSub" type="text" placeholder="rtsp://…">
+    <div class="hint">если доп. потока нет, превью берёт основной</div>
+    <label>Локация (опц.)</label>
+    <input id="addLoc" type="text" placeholder="ресепшен">
+    <div class="row" style="margin-top:14px;justify-content:flex-end">
+      <button class="btn danger admin-only" type="button" id="camModalDelete" style="display:none;margin-right:auto" onclick="deleteCamFromModal()">Удалить</button>
+      <button class="btn" type="button" onclick="closeAddCam()">Отмена</button>
+      <button class="btn ok" type="button" id="camModalSubmit" onclick="submitAddCam()">Добавить</button>
+    </div>
+    <div class="hint" id="addErr" style="color:var(--alarm)"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="askModal" style="z-index:60">
+  <div class="modal">
+    <h3 id="askTitle">Подтвердите</h3>
+    <div id="askText" class="hint" style="font-size:13px;color:var(--text)"></div>
+    <div class="row" style="margin-top:14px;justify-content:flex-end">
+      <button class="btn" type="button" onclick="closeAsk()">Отмена</button>
+      <button class="btn danger" type="button" id="askGo" onclick="runAsk()">Да</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="camDelModal" style="z-index:50">
+  <div class="modal">
+    <h3 id="camDelTitle">Удалить камеру</h3>
+    <div id="camDelText" class="hint" style="font-size:13px;color:var(--text)"></div>
+    <div class="row" style="margin-top:14px;justify-content:flex-end">
+      <button class="btn" type="button" onclick="closeCamDel()">Отмена</button>
+      <button class="btn danger" type="button" id="camDelGo" onclick="runCamDel()">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="editPersonModal" onclick="if(event.target===this)closeEditPerson()">
+  <div class="modal">
+    <h3>Редактировать карточку</h3>
+    <input type="hidden" id="editPersonName" value="">
+    <label>Фамилия</label>
+    <input id="editLast" type="text">
+    <label>Имя</label>
+    <input id="editFirst" type="text">
+    <label>Отчество</label>
+    <input id="editPat" type="text">
+    <label>ИИН</label>
+    <input id="editIin" type="text" maxlength="12" inputmode="numeric">
+    <label>Дата рождения</label>
+    <input id="editDob" type="text" placeholder="дд.мм.гггг">
+    <label>Добавить фото (опц.)</label>
+    <input id="editPersonFile" type="file" accept="image/*">
+    <div id="editPhotoStrip" class="edit-shots"></div>
+    <div class="row" style="margin-top:14px;justify-content:flex-end">
+      <button class="btn" type="button" onclick="closeEditPerson()">Отмена</button>
+      <button class="btn ok" type="button" onclick="saveEditPerson()">Сохранить</button>
+    </div>
+    <div class="hint" id="editPersonErr" style="color:var(--alarm)"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+let cameras = {{ (cameras_json or [])|tojson|safe }};
+let analytics = {faces:{}};
+let view = 'home';
+let fromAdmin = false;
+let previewIndex = null;
+let openSlots = {};
+let galleryPeople = [];
+let statsKind = 'map';
+let statsHours = 24;
+
+const preview = document.getElementById('preview');
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function enc(s){return encodeURIComponent(s||'');}
+function fmtTime(ts){
+  if(ts==null || ts==='') return '';
+  const n=Number(ts);
+  const d=new Date(n>1e12?n:n*1000);
+  if(Number.isNaN(d.getTime())) return '';
+  const pad=x=>String(x).padStart(2,'0');
+  const t=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  if(d.toDateString()===new Date().toDateString()) return t;
+  return pad(d.getDate())+'.'+pad(d.getMonth()+1)+' '+t;
+}
+function fmtDur(s){ s=Math.max(0,Math.round(s)); if(s<60) return s+' с'; if(s<3600) return Math.round(s/60)+' мин'; return (s/3600).toFixed(1)+' ч'; }
+async function jget(u, ms){
+  const opt={credentials:'same-origin'};
+  if(ms) opt.signal=AbortSignal.timeout(ms);
+  return fetch(u, opt).then(r=>r.json());
+}
+async function jpost(u,b, ms){
+  const opt={method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})};
+  if(ms) opt.signal=AbortSignal.timeout(ms);
+  const r=await fetch(u, opt);
+  const j=await r.json().catch(()=>({ok:false,error:'ответ не JSON'}));
+  if(!r.ok && j.ok!==true) j.ok=false;
+  if(!r.ok && !j.error) j.error='HTTP '+r.status;
+  return j;
+}
+let statusUntil=0;
+function setStatus(t, holdMs){
+  const el=document.getElementById('status');
+  if(el) el.textContent=t;
+  statusUntil=Date.now()+(holdMs==null?6000:holdMs);
+}
+async function jdel(u){
+  const r=await fetch(u,{method:'DELETE',credentials:'same-origin'});
+  const j=await r.json().catch(()=>({ok:false,error:'ответ не JSON'}));
+  if(!r.ok && j.ok==null) j.ok=false;
+  return j;
+}
+function fileToB64(f){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); }); }
+const debTimers={};
+function debounce(fn){ clearTimeout(debTimers[fn.name]); debTimers[fn.name]=setTimeout(fn, 280); }
+function kindPill(kind){ return `<span class="pill ${esc(kind)}">${kind==='known'?'картотека':(kind==='unknown'?'неизвестный':'трек')}</span>`; }
+function camName(i){ const c=cameras.find(x=>Number(x.index)===Number(i)); return c?c.name:('камера #'+i); }
+
+/* ---------- навигация ---------- */
+const VIEWS=['home','cam','gallery','stats','admin'];
+const LEFT={home:'leftHome',cam:'leftCam',gallery:'leftGal',stats:'leftStats',admin:'leftAdmin'};
+const CENTER={home:'centerHome',cam:'centerCam',gallery:'centerGal',stats:'centerStats',admin:'centerAdmin'};
+function setView(mode){
+  view=mode;
+  VIEWS.forEach(v=>{
+    document.getElementById(LEFT[v]).classList.toggle('show', v===mode);
+    document.getElementById(CENTER[v]).classList.toggle('show', v===mode);
+  });
+  const titles={home:'События', cam:'В кадре', gallery:'События', admin:'События'};
+  if(titles[mode]) document.getElementById('rightTitle').textContent=titles[mode];
+  paintClearBtn();
+  if(mode!=='cam'){ previewIndex=null; preview.removeAttribute('src'); }
+  if(mode==='home'){ renderCams(); syncWallSet(); startWall(); }
+  else stopWall();
+  if(mode==='gallery') loadGallery();
+  if(mode==='admin'){ paintAdmin(); loadSys(); }
+  if(mode==='stats') setStatsKind(statsKind);
+  refreshRight();
+}
+function goHome(){ fromAdmin=false; setView('home'); }
+let adminPane='sys';
+function paintAdmin(){
+  const sys=document.getElementById('adminSys');
+  const aud=document.getElementById('adminAudit');
+  if(sys) sys.classList.toggle('hidden', adminPane!=='sys');
+  if(aud) aud.classList.toggle('hidden', adminPane!=='audit');
+}
+function openAdmin(){ fromAdmin=true; adminPane='sys'; setView('admin'); paintAdmin(); }
+function openAudit(){ fromAdmin=true; adminPane='audit'; setView('admin'); paintAdmin(); loadAudit(); }
+async function loadAudit(){
+  const head=document.getElementById('auditHead');
+  const box=document.getElementById('auditList');
+  head.textContent='сравниваю карточки…';
+  const j=await jget('/api/admin/gallery/audit', 60000).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ head.textContent=j.error||'не удалось'; return; }
+  head.textContent=`карточек ${j.total} · дублей ${j.pairs.length} · магнитов ${j.magnets.length} · без ФИО ${j.nameless_count}`;
+  const card=(p,extra='')=>`<div style="display:flex;gap:8px;align-items:center;min-width:0">${unkFace(p.thumb)}<div style="min-width:0"><b>${esc(p.display)}</b><div class="hint">векторов ${p.embeddings} · фото ${p.photos}${extra}</div></div></div>`;
+  const pairs=j.pairs.map((pr,i)=>`<div class="unk">
+      <div class="hint" style="margin:0 0 6px">сходство ${Math.round(pr.score*100)}%</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>${card(pr.a)}<button class="btn sm" type="button" style="margin-top:6px" onclick="mergeCards('${esc(pr.a.name)}','${esc(pr.b.name)}','${esc(pr.a.display)}','${esc(pr.b.display)}')">Оставить эту</button></div>
+        <div>${card(pr.b)}<button class="btn sm" type="button" style="margin-top:6px" onclick="mergeCards('${esc(pr.b.name)}','${esc(pr.a.name)}','${esc(pr.b.display)}','${esc(pr.a.display)}')">Оставить эту</button></div>
+      </div>
+      <div class="row" style="margin-top:6px"><button class="btn sm" type="button" onclick="openEditPersonFromAudit('${esc(pr.a.name)}')">Изменить ${esc(pr.a.display.slice(0,18))}</button><button class="btn sm" type="button" onclick="openEditPersonFromAudit('${esc(pr.b.name)}')">Изменить ${esc(pr.b.display.slice(0,18))}</button></div>
+    </div>`).join('') || '<div class="hint">дублей нет</div>';
+  const magnets=j.magnets.map(m=>`<div class="unk">${card(m, ` · соседей ближе 45%: ${m.neighbours} · узнана на треках за час: ${m.tracks_hour}`)}
+      <div class="row" style="margin-top:6px"><button class="btn sm" type="button" onclick="openEditPersonFromAudit('${esc(m.name)}')">Изменить</button><button class="btn sm" type="button" onclick="showRoute('p:${esc(m.name)}')">Маршрут</button><button class="btn sm danger admin-only" type="button" onclick="delPersonFromAudit('${esc(m.name)}','${esc(m.display)}')">Удалить карточку</button></div>
+    </div>`).join('') || '<div class="hint">магнитов нет</div>';
+  box.innerHTML=`<h4 style="margin:10px 0 6px">Дубли</h4>${pairs}<h4 style="margin:14px 0 6px">Магниты</h4>${magnets}<h4 style="margin:14px 0 6px">Без ФИО: ${j.nameless_count}</h4><div class="hint">Карточки без имени видны в «Картотеке» по фото; имя задаётся через «Изменить».</div>`;
+}
+async function mergeCards(keep, drop, keepName, dropName){
+  if(!confirm(`Слить «${dropName}» в «${keepName}»?\nВекторы и фото перенесутся, карточка «${dropName}» будет удалена.`)) return;
+  const j=await jpost('/api/admin/gallery/merge',{keep, drop}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ alert(j.error||'не удалось'); return; }
+  loadAudit();
+}
+async function delPersonFromAudit(name, display){
+  if(!confirm(`Удалить карточку «${display}»? Это нельзя отменить.`)) return;
+  const j=await jdel('/api/gallery/'+enc(name)).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ alert(j.error||'не удалось удалить'); return; }
+  loadAudit();
+}
+async function openEditPersonFromAudit(name){
+  if(!galleryPeople.length){
+    const j=await jget('/api/gallery').catch(()=>({}));
+    galleryPeople=j.people||[];
+  }
+  openEditPerson(name);
+}
+function openGallery(admin){ fromAdmin=!!admin; setView('gallery'); }
+function backFromGal(){ if(fromAdmin) openAdmin(); else goHome(); }
+function openStats(kind){ statsKind=kind||'map'; setView('stats'); }
+function setStatsKind(kind){
+  statsKind=kind;
+  ['map','report','alerts','passages'].forEach(k=>{
+    document.getElementById('left'+k).classList.toggle('show', k===kind);
+    document.getElementById('pane'+k).classList.toggle('show', k===kind);
+    document.getElementById('nav'+k).className='btn wide'+(k===kind?' ok':'');
+  });
+  const t={map:'Карта движения', report:'Отчёты', alerts:'Журнал событий', passages:'Проходы'}[kind];
+  document.getElementById('statsTitle').textContent=t;
+  document.getElementById('rightTitle').textContent=kind==='map'?'Маршруты':(kind==='report'?'Люди':(kind==='passages'?'Проходы':'Журнал'));
+  paintClearBtn();
+  paintPeriod();
+  loadStats();
+}
+function paintPeriod(){
+  document.querySelectorAll('#statsPeriod .btn').forEach(b=>{
+    b.className='btn'+(Number(b.getAttribute('data-h'))===Number(statsHours)?' ok':'');
+  });
+}
+function setStatsHours(h){ statsHours=h; paintPeriod(); loadStats(); }
+function loadStats(){
+  if(view!=='stats') return;
+  if(statsKind==='map') loadFloorplan();
+  else if(statsKind==='report') loadReport();
+  else if(statsKind==='passages') loadPassages();
+  else loadAlertJournal();
+}
+let passPairs=[];
+function camOptions(sel){
+  return '<option value="">— не выбрано —</option>'+cameras.map(c=>`<option value="${Number(c.index)}"${Number(c.index)===Number(sel)?' selected':''}>${esc(c.name)}</option>`).join('');
+}
+function paintPassPairs(){
+  const box=document.getElementById('passRoles');
+  if(!passPairs.length){ box.innerHTML='<div class="hint">пар пока нет</div>'; }
+  else box.innerHTML=passPairs.map((p,i)=>`<div class="item" style="margin:6px 0">
+      <div class="hint">Пара ${i+1}</div>
+      <div class="hint" style="margin-top:4px">вход</div>
+      <select onchange="setPassPair(${i}, 'in', this.value)">${camOptions(p.in)}</select>
+      <div class="hint" style="margin-top:4px">выход</div>
+      <select onchange="setPassPair(${i}, 'out', this.value)">${camOptions(p.out)}</select>
+      <button class="btn sm danger" type="button" style="margin-top:6px;width:100%" onclick="delPassPair(${i})">удалить пару</button>
+    </div>`).join('');
+  box.innerHTML+='<button class="btn ok wide" type="button" style="margin-top:6px" onclick="addPassPair()">+ вход и выход</button>';
+}
+async function loadPassRoles(){
+  const j=await jget('/api/passage-pairs').catch(()=>({}));
+  passPairs=j.pairs||[];
+  paintPassPairs();
+}
+async function savePassPairs(){
+  const j=await jpost('/api/passage-pairs',{pairs:passPairs}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ alert(j.error||'не сохранилось'); }
+  paintPassPairs();
+}
+function addPassPair(){ passPairs.push({in:null,out:null}); paintPassPairs(); }
+function setPassPair(i, side, v){ passPairs[i][side]=v===''?null:Number(v); savePassPairs(); }
+function delPassPair(i){ passPairs.splice(i,1); savePassPairs(); }
+async function loadPassages(){
+  if(view!=='stats' || statsKind!=='passages') return;
+  loadPassRoles();
+  const q=document.getElementById('passQ')?document.getElementById('passQ').value.trim():'';
+  const [sum, log]=await Promise.all([
+    jget('/api/passages/summary?hours='+statsHours).catch(()=>({})),
+    jget('/api/passages?hours='+statsHours+'&q='+encodeURIComponent(q)).catch(()=>({})),
+  ]);
+  const people=sum.people||[];
+  const dur=s=>{ s=Math.round(s); const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return h?(h+' ч '+m+' мин'):(m+' мин'); };
+  document.getElementById('passSum').innerHTML=people.length?people.map(p=>`<tr><td>${esc(p.display)}${p.kind==='unknown'?' <span class="hint">неизвестный</span>':''}</td><td>${esc(p.date)}</td><td>${p.arrival?esc(fmtTime(p.arrival)):'—'}</td><td>${p.departure?esc(fmtTime(p.departure)):(p.inside?'внутри':'—')}</td><td>${p.sessions}</td><td>${dur(p.total_s)}${p.inside?' · сейчас внутри':''}</td></tr>`).join(''):'<tr><td colspan="6" class="hint">нет проходов за период</td></tr>';
+  const rows=log.passages||[];
+  document.getElementById('passHead').textContent=rows.length+' проходов за период';
+  document.getElementById('passList').innerHTML=rows.length?rows.map(r=>{
+    const full=r.thumb?String(r.thumb).replace(/\.jpg$/,'_full.jpg'):'';
+    const img=r.thumb?`<img src="${esc(r.thumb)}" alt="" data-full="${esc(full)}" onclick="openFullFrame(this)" style="cursor:zoom-in">`:'<div class="ph">нет кадра</div>';
+    const dir=r.direction==='in'?'вход':'выход';
+    return `<div class="alert-row">${img}<div style="flex:1"><b>${esc(r.display||'неизвестен')}</b> <span class="hint">${dir}</span>
+      <div class="hint">${esc(fmtTime(r.ts))} · ${esc(r.camera||camName(r.camera_index))}${r.track_id!=null?(' · трек #'+r.track_id):''}</div></div></div>`;
+  }).join(''):'<div class="hint">проходов пока нет</div>';
+}
+function toggleLiveFs(){
+  const el=document.getElementById('liveStage');
+  if(document.fullscreenElement) document.exitFullscreen();
+  else el.requestFullscreen().catch(()=>{});
+}
+let wallTimer=null;
+let wallBusy=false;
+const WALL_PAGE=6; // на экране 6 превью; остальные камеры без превью-потока
+let wallPage=0;
+function wallPages(){ return Math.max(1, Math.ceil((cameras.length||0)/WALL_PAGE)); }
+function wallSlice(){
+  const pages=wallPages();
+  if(wallPage>=pages) wallPage=pages-1;
+  if(wallPage<0) wallPage=0;
+  const a=wallPage*WALL_PAGE;
+  return cameras.slice(a, a+WALL_PAGE);
+}
+function syncWallSet(){
+  // сервер поднимает превью только для этих камер; остальные гасятся
+  const ids=wallSlice().map(c=>Number(c.index));
+  fetch('/api/wall',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({indices:ids})}).catch(()=>{});
+}
+function wallShift(dir){
+  const pages=wallPages();
+  wallPage=(wallPage+dir+pages)%pages;
+  const el=document.getElementById('camList');
+  if(el) el.dataset.sig='';
+  renderCams();
+  syncWallSet();
+  startWall();
+}
+function paintWallPager(){
+  const info=document.getElementById('wallPageInfo');
+  const prev=document.getElementById('wallPrev');
+  const next=document.getElementById('wallNext');
+  const pages=wallPages();
+  const n=cameras.length||0;
+  if(info){
+    if(!n) info.textContent='камер нет';
+    else if(n<=WALL_PAGE) info.textContent=`на экране ${n} камер`;
+    else info.textContent=`страница ${wallPage+1} из ${pages} · на экране ${Math.min(WALL_PAGE, n-wallPage*WALL_PAGE)} из ${n}`;
+  }
+  if(prev) prev.disabled=pages<=1;
+  if(next) next.disabled=pages<=1;
+}
+function revokeWall(){
+  document.querySelectorAll('#camList img[data-i]').forEach(img=>{
+    if(img.dataset.obj){ URL.revokeObjectURL(img.dataset.obj); img.dataset.obj=''; }
+  });
+}
+function stopWall(){
+  if(wallTimer){ clearInterval(wallTimer); wallTimer=null; }
+  revokeWall();
+  document.querySelectorAll('#camList img[data-i]').forEach(img=>img.removeAttribute('src'));
+}
+async function loadWall(img){
+  try{
+    const r=await fetch('/api/preview/'+img.dataset.i,{cache:'no-store'});
+    if(!r.ok) return;
+    const blob=await r.blob();
+    if(!blob.size) return;
+    const url=URL.createObjectURL(blob);
+    const prev=img.dataset.obj;
+    img.src=url;
+    img.dataset.obj=url;
+    if(prev) URL.revokeObjectURL(prev);
+  }catch(e){}
+}
+function refreshWall(){
+  if(view!=='home') return;
+  // Каждая плитка грузится сама: медленная (холодный ffmpeg) не держит остальные
+  document.querySelectorAll('#camList img[data-i]').forEach(img=>{
+    if(img.dataset.busy) return;
+    img.dataset.busy='1';
+    loadWall(img).finally(()=>{ delete img.dataset.busy; });
+  });
+}
+function startWall(){
+  // Плитки не открывают вечный MJPEG: браузер держит до 6 соединений на хост,
+  // остальные плитки висели пустыми. Кадры берём короткими запросами /api/preview.
+  if(wallTimer) return;
+  refreshWall();
+  wallTimer=setInterval(refreshWall, 400);
+}
+
+/* ---------- сервис, камеры ---------- */
+function faceIdxs(){ return ((analytics.faces||{}).camera_indices||[]).map(Number); }
+function paintSvc(){
+  const on=!!(analytics.faces||{}).enabled;
+  const st=document.getElementById('svcState');
+  const btn=document.getElementById('svcToggle');
+  st.textContent=on?'вкл':'выкл';
+  st.className='state '+(on?'on':'off');
+  btn.textContent=on?'Выключить':'Включить';
+  btn.className='btn '+(on?'danger':'ok');
+  document.getElementById('svcHint').textContent=on?'детекция, распознавание и трекинг идут':'остановлено — нажмите «Включить»';
+}
+async function patchFaces(faces){
+  const j=await jpost('/api/analytics',{faces});
+  if(j.analytics) analytics=j.analytics;
+  paintSvc();
+  if(view==='home'){ renderCams(); syncWallSet(); }
+}
+function paintClearBtn(){
+  const t=document.getElementById('rightTitle');
+  const b=document.getElementById('clearEventsBtn');
+  if(b&&t) b.classList.toggle('hidden', t.textContent!=='События');
+}
+let askFn=null;
+function ask(title, text, fn){
+  askFn=fn;
+  document.getElementById('askTitle').textContent=title;
+  document.getElementById('askText').textContent=text;
+  document.getElementById('askModal').classList.add('show');
+}
+function closeAsk(){ document.getElementById('askModal').classList.remove('show'); askFn=null; }
+function runAsk(){ const fn=askFn; closeAsk(); if(fn) fn(); }
+function stopStreams(){
+  ask('Остановить потоки', 'Все камеры перестанут декодироваться. Сайт останется.', async function(){
+    const out=document.getElementById('sysActOut');
+    const j=await jpost('/api/admin/streams/stop',{}).catch(e=>({ok:false,error:String(e)}));
+    if(!j.ok){ if(out) out.textContent=j.error||'не удалось остановить'; return; }
+    if(analytics.faces) analytics.faces.enabled=false;
+    paintSvc();
+    if(out) out.textContent='потоки остановлены'+(j.stopped!=null?(': '+j.stopped):'');
+  });
+}
+async function startStreams(){
+  const out=document.getElementById('sysActOut');
+  if(out) out.textContent='включаю потоки…';
+  const j=await jpost('/api/admin/streams/start',{}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ if(out) out.textContent=j.error||'не удалось включить'; return; }
+  if(analytics.faces) analytics.faces.enabled=true;
+  paintSvc();
+  if(out) out.textContent='потоки включены';
+}
+function restartService(){
+  ask('Рестарт сервиса', 'Страница на пару секунд пропадёт, затем обновится сама.', async function(){
+    const out=document.getElementById('sysActOut');
+    if(out) out.textContent='перезапуск…';
+    await jpost('/api/admin/restart',{}).catch(()=>({}));
+    setTimeout(function waitUp(){
+      fetch('/api/health').then(r=>{ if(r.ok) location.reload(); else setTimeout(waitUp, 500); }).catch(()=>setTimeout(waitUp, 500));
+    }, 1500);
+  });
+}
+async function toggleService(){
+  const btn=document.getElementById('svcToggle');
+  btn.disabled=true;
+  try{ await patchFaces({enabled:!(analytics.faces||{}).enabled}); }finally{ btn.disabled=false; }
+}
+async function toggleCamDetect(i, on){
+  const idxs=faceIdxs().filter(x=>x!==Number(i));
+  if(on) idxs.push(Number(i));
+  await patchFaces({camera_indices:idxs});
+}
+const IMGSZ_CHOICES=[640,960,1280,1600,1920];
+let camSet=null;                      // индекс камеры, чьи настройки сейчас в ползунках
+let camSetSettings=null;              // текущие значения этой камеры
+let camSetSaveTimer=null;
+let camSetDragging={};
+async function loadCamSettings(i){
+  const j=await jget('/api/cameras/'+i).catch(()=>({}));
+  if(!j.settings) return null;
+  camSet=i; camSetSettings=j.settings;
+  const who=document.getElementById('camSetWho'); if(who) who.textContent=camName(i);
+  paintCamSettings();
+  return j.settings;
+}
+function paintCamSettings(){
+  const s=camSetSettings; if(!s) return;
+  const setv=(id,tid,txt,val)=>{ if(camSetDragging[id])return; const e=document.getElementById(id); if(e)e.value=String(val); const t=document.getElementById(tid); if(t)t.textContent=txt; };
+  setv('chDet','detVal',Math.round(Number(s.det_conf)*100)+'%',Math.round(Number(s.det_conf)*100));
+  setv('chConf','confVal',Math.round(Number(s.match_threshold)*100)+'%',Math.round(Number(s.match_threshold)*100));
+  setv('chMinSide','minSideVal',String(s.min_face_side),s.min_face_side);
+  const iv=(Math.round(Number(s.detect_interval)*10)/10).toFixed(1);
+  setv('chInterval','intervalVal',iv,Number(s.detect_interval));
+  const mk=(Math.round(Number(s.motion_k)*10)/10).toFixed(1);
+  setv('chMotion','motionVal',mk,Number(s.motion_k));
+  const zi=Math.max(0,IMGSZ_CHOICES.indexOf(Number(s.imgsz)));
+  setv('chImgsz','imgszVal',String(s.imgsz),zi);
+}
+function setCamSet(key,val,dragging){
+  if(camSet==null||!camSetSettings){ setStatus('сначала откройте камеру',4000); return; }
+  // scale: percent -> fraction for the two threshold sliders
+  let v=val;
+  if(key==='det_conf'||key==='match_threshold') v=Math.max(0,Math.min(100,Number(val)))/100;
+  if(key==='min_face_side') v=Math.max(10,Math.min(300,Math.round(val)));
+  if(key==='detect_interval') v=Math.max(0.1,Math.min(15,Number(val)));
+  if(key==='motion_k') v=Math.max(1,Math.min(10,Number(val)));
+  camSetDragging[key]=!!dragging;
+  camSetSettings[key]=v;
+  // label live
+  const lbl={det_conf:()=>document.getElementById('detVal'),match_threshold:()=>document.getElementById('confVal'),min_face_side:()=>document.getElementById('minSideVal'),detect_interval:()=>document.getElementById('intervalVal'),motion_k:()=>document.getElementById('motionVal'),imgsz:()=>document.getElementById('imgszVal')};
+  const el=lbl[key]&&lbl[key](); if(el) el.textContent = key==='detect_interval'?(Math.round(v*10)/10).toFixed(1): key==='motion_k'?(Math.round(v*10)/10).toFixed(1): (key==='det_conf'||key==='match_threshold')?Math.round(v*100)+'%':String(v);
+  clearTimeout(camSetSaveTimer);
+  camSetSaveTimer=setTimeout(()=>{
+    const i=camSet;
+    jpost('/api/cameras/'+i+'/settings',{[key]:v}).then(j=>{
+      if(j.settings){ camSetSettings=j.settings; if((analytics.faces||{}).camera_settings) analytics.faces.camera_settings[String(i)]=j.settings; }
+      camSetDragging[key]=false; paintCamSettings();
+    }).catch(()=>{ camSetDragging[key]=false; });
+  }, dragging?280:40);
+}
+function paintConf(){ paintCamSettings(); }
+function hwClass(p){ if(p==null||Number.isNaN(p)) return 'hw off'; if(p>=85) return 'hw hot'; if(p>=60) return 'hw warn'; return 'hw'; }
+function hwPct(p){ return (p==null||Number.isNaN(p))?'—':(Math.round(p)+'%'); }
+function paintHw(h){
+  const set=(id,txt,p)=>{ const el=document.getElementById(id); el.textContent=txt; el.className=hwClass(p); };
+  set('hwGpu', hwPct(h.gpu), h.gpu);
+  set('hwCpu', hwPct(h.cpu), h.cpu);
+  set('hwDisk', h.disk==null?'—':(hwPct(h.disk)+' · '+h.disk_used_gb+'/'+h.disk_total_gb+' ГБ'), h.disk);
+}
+function renderCams(){
+  const el=document.getElementById('camList');
+  if(!el) return;
+  const on=faceIdxs();
+  const page=wallSlice();
+  const sig=wallPage+'/'+cameras.map(c=>c.index+'|'+c.name+'|'+(c.location||'')).join(';');
+  if(el.dataset.sig!==sig){
+    revokeWall();
+    el.dataset.sig=sig;
+    if(!cameras.length){
+      el.innerHTML='<div class="hint">камер пока нет — Админ → «Добавить камеру»</div>';
+    }else{
+      el.innerHTML=page.map(c=>`<article class="wall-card" data-cam="${c.index}">
+        <div class="wall-shot" data-act="open" data-i="${c.index}" title="Открыть">
+          <img data-i="${c.index}" alt="${esc(c.name)}">
+        </div>
+        <button type="button" class="wall-x admin-only" data-act="del" data-i="${c.index}" title="Удалить">✕</button>
+        <div class="wall-name">
+          <label class="wall-pick" title="выбрать для удаления"><input type="checkbox" data-pick="${c.index}" ${camPick.has(Number(c.index))?'checked':''} onchange="toggleCamPick(${c.index}, this.checked)"></label>
+          <i class="dot" id="dot${c.index}"></i><span>${esc(c.name)}</span>
+        </div>
+        <div class="wall-acts">
+          <button type="button" class="btn" id="detBtn${c.index}" data-act="det" data-i="${c.index}">Детект</button>
+          <button type="button" class="btn" data-act="edit" data-i="${c.index}">Изменить</button>
+          <button type="button" class="btn danger admin-only" data-act="del" data-i="${c.index}">Удалить</button>
+        </div>
+      </article>`).join('');
+    }
+  }
+  paintWallPager();
+  paintPickBar();
+  page.forEach(c=>{
+    const det=on.includes(Number(c.index));
+    const btn=document.getElementById('detBtn'+c.index);
+    if(btn) btn.classList.toggle('ok', det);
+    const dot=document.getElementById('dot'+c.index);
+    if(dot) dot.className='dot'+(openSlots[c.index]?' on':'');
+  });
+}
+// клики по плитке — делегирование на родителя (превью больше не перехватывает «Удалить»)
+(function bindCamListClicks(){
+  const root=document.getElementById('camList');
+  if(!root) return;
+  root.addEventListener('click', function(ev){
+    var t=ev.target;
+    while(t && t!==root && !(t.getAttribute && t.getAttribute('data-act'))) t=t.parentNode;
+    if(!t || t===root) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    var i=Number(t.getAttribute('data-i'));
+    if(isNaN(i)) return;
+    var act=t.getAttribute('data-act');
+    if(act==='open') openCamera(i);
+    else if(act==='edit') openEditCam(i);
+    else if(act==='det') toggleCamDetect(i, !t.classList.contains('ok'));
+    else if(act==='del') askDeleteCams([i]);
+  });
+})();
+let camPick=new Set();
+let camDelQueue=[];
+function toggleCamPick(i, on){
+  i=Number(i);
+  if(on) camPick.add(i); else camPick.delete(i);
+  paintPickBar();
+}
+function paintPickBar(){
+  const b=document.getElementById('wallDelSel');
+  if(!b) return;
+  const n=camPick.size;
+  b.textContent=n?('Удалить выбранные ('+n+')'):'Удалить выбранные';
+  b.disabled=false;
+}
+function askDeleteSelected(){ askDeleteCams([...camPick]); }
+function deleteCurrentCam(){
+  if(previewIndex==null){ setStatus('камера не открыта'); return; }
+  askDeleteCams([previewIndex]);
+}
+function askDeleteCams(idxs){
+  const list=[...new Set((idxs||[]).map(Number))].filter(i=>cameras.some(c=>Number(c.index)===i));
+  if(!list.length){ setStatus('сначала отметьте камеры галочкой'); return; }
+  camDelQueue=list;
+  const title=document.getElementById('camDelTitle');
+  const text=document.getElementById('camDelText');
+  if(title) title.textContent=list.length===1?'Удалить камеру':'Удалить камеры';
+  if(text) text.textContent=list.length===1
+    ? ('«'+camName(list[0])+'» пропадёт из списка, поток остановится.')
+    : ('Будут удалены ('+list.length+'): '+list.map(camName).join(', '));
+  const go=document.getElementById('camDelGo');
+  if(go) go.disabled=false;
+  document.getElementById('camDelModal').classList.add('show');
+  setStatus(list.length===1?('удалить «'+camName(list[0])+'»?'):('удалить '+list.length+' камер?'), 12000);
+}
+function closeCamDel(){ document.getElementById('camDelModal').classList.remove('show'); }
+function fillCamForm(c){
+  document.getElementById('addName').value=c.name||'';
+  document.getElementById('addUrl').value=c.rtsp_url_main||'';
+  document.getElementById('addUrlSub').value=c.rtsp_url_sub||'';
+  document.getElementById('addLoc').value=c.location||'';
+  document.getElementById('addErr').textContent='';
+}
+function openAddCam(){
+  document.getElementById('editCamIndex').value='';
+  document.getElementById('camModalTitle').textContent='Новая камера';
+  document.getElementById('camModalSubmit').textContent='Добавить';
+  document.getElementById('camModalDelete').style.display='none';
+  fillCamForm({});
+  document.getElementById('addModal').classList.add('show');
+  document.getElementById('addName').focus();
+}
+async function openEditCam(i){
+  const j=await jget('/api/cameras/'+i).catch(()=>({}));
+  document.getElementById('editCamIndex').value=String(i);
+  document.getElementById('camModalTitle').textContent='Камера #'+i;
+  document.getElementById('camModalSubmit').textContent='Сохранить';
+  document.getElementById('camModalDelete').style.display='';
+  fillCamForm((j&&j.camera)||cameras.find(x=>x.index===i)||{});
+  document.getElementById('addModal').classList.add('show');
+}
+function closeAddCam(){ document.getElementById('addModal').classList.remove('show'); }
+async function submitAddCam(){
+  const err=document.getElementById('addErr');
+  const editIdx=document.getElementById('editCamIndex').value;
+  const body={
+    name:document.getElementById('addName').value.trim(),
+    rtsp_url_main:document.getElementById('addUrl').value.trim(),
+    rtsp_url_sub:document.getElementById('addUrlSub').value.trim(),
+    location:document.getElementById('addLoc').value.trim()
+  };
+  if(!body.name||!body.rtsp_url_main){ err.textContent='укажите имя и основной поток'; return; }
+  const j=await jpost(editIdx!==''?('/api/cameras/'+editIdx):'/api/cameras', body).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ err.textContent=j.error||'ошибка'; return; }
+  closeAddCam();
+  await loadCams();
+  if(editIdx==='' && j.index!=null) openCamera(j.index); else renderCams();
+}
+let camDeleteBusy=false;
+function deleteCam(i){ askDeleteCams([Number(i)]); }
+function deleteCamFromModal(){ const i=document.getElementById('editCamIndex').value; if(i!=='') askDeleteCams([+i]); }
+async function runCamDel(){
+  if(camDeleteBusy){ setStatus('удаление уже идёт'); return; }
+  const idxs=camDelQueue.slice().sort((a,b)=>b-a);
+  if(!idxs.length){ closeCamDel(); return; }
+  camDeleteBusy=true;
+  const go=document.getElementById('camDelGo');
+  if(go) go.disabled=true;
+  closeCamDel();
+  closeAddCam();
+  let okN=0, fail='';
+  try{
+    for(const i of idxs){
+      setStatus('удаляю «'+camName(i)+'»…', 20000);
+      const j=await jpost('/api/cameras/'+i+'/delete',{}, 20000).catch(e=>({ok:false,error:String(e)}));
+      if(!j.ok){ fail=j.error||'не удалось удалить'; break; }
+      okN++;
+      camPick.delete(i);
+      camPick=new Set([...camPick].map(x=>x>i?x-1:x));
+      if(previewIndex===i){ previewIndex=null; preview.removeAttribute('src'); }
+      else if(previewIndex!=null && previewIndex>i) previewIndex--;
+    }
+  }finally{
+    camDeleteBusy=false;
+  }
+  stopWall();
+  await loadCams();
+  const list=document.getElementById('camList');
+  if(list) delete list.dataset.sig;
+  if(wallPage>=wallPages()) wallPage=Math.max(0, wallPages()-1);
+  if(view==='cam' && previewIndex==null) goHome();
+  else { renderCams(); if(view==='home') startWall(); }
+  paintPickBar();
+  if(fail) setStatus('удалено '+okN+', дальше ошибка: '+fail, 10000);
+  else setStatus('удалено: '+okN+', осталось '+cameras.length, 8000);
+}
+async function loadCams(){
+  const j=await jget('/api/cameras', 4000).catch(()=>({}));
+  if(Array.isArray(j.cameras)) cameras=j.cameras;
+}
+async function openCamera(i){
+  setView('cam');
+  previewIndex=i;
+  document.getElementById('camName').textContent=camName(i);
+  await jpost('/api/preview',{camera_index:i}).catch(()=>({}));
+  preview.src='/video_feed/'+i+'?t='+Date.now();
+  await loadCamSettings(i);
+  paintCamSettings();
+}
+
+/* ---------- правая панель ---------- */
+function eventSnap(e){
+  if(e.snapshot) return String(e.snapshot);
+  const t=String(e.thumb||'');
+  const mark='/api/snapshot/';
+  const i=t.indexOf(mark);
+  return i>=0?decodeURIComponent(t.slice(i+mark.length)):'';
+}
+function reviewBtn(e){ return ''; }
+function eventRow(e){
+  const full=e.thumb?String(e.thumb).replace(/\.jpg$/,'_full.jpg'):'';
+  const live=e.thumb?`<img src="${esc(e.thumb)}" alt="" data-full="${esc(full)}" onclick="event.stopPropagation();openFullFrame(this)">`:'<div class="ph">нет кадра</div>';
+  const base=e.gallery_thumb?`<img src="${esc(e.gallery_thumb)}" alt="">`:'<div class="ph">нет в базе</div>';
+  const sim=(e.kind==='known' && (e.similarity!=null || e.score!=null))?(' · '+Math.round((e.similarity!=null?e.similarity:e.score)*100)+'%'):'';
+  const near=e.near&&e.near.display?`<div class="hint">ближе в картотеке: ${esc(e.near.display)} · ${Math.round(e.near.score*100)}%</div>`:'';
+  const when=e.live?'сейчас':esc(fmtTime(e.ts||e.last_ts));
+  const click=e.subject?` class="item det click" onclick="showRoute('${esc(e.subject)}')"`:' class="item det"';
+  return `<div${click}>
+    <div class="det-photos"><div class="det-shot">${live}<span>кадр</span></div><div class="det-shot">${base}<span>база</span></div></div>
+    <div class="det-meta"><b>${esc(e.display||'неизвестен')}</b>${kindPill(e.kind)}
+      <div class="hint">${when} · ${esc(e.camera||camName(e.camera_index))}${sim}${e.track_id!=null?(' · трек #'+e.track_id):''}</div>
+      ${near}
+      ${reviewBtn(e)}
+    </div></div>`;
+}
+function openFullFrame(img){
+  const src=img.dataset.full||img.getAttribute('src');
+  if(!src) return;
+  let box=document.getElementById('fullFrameBox');
+  if(!box){
+    box=document.createElement('div');
+    box.id='fullFrameBox';
+    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:zoom-out';
+    box.innerHTML='<img alt="" style="max-width:95vw;max-height:95vh;border-radius:6px">';
+    box.onclick=()=>box.remove();
+    document.body.appendChild(box);
+  }
+  const pic=box.querySelector('img');
+  pic.onerror=()=>{ if(pic.dataset.fb!=='1'){ pic.dataset.fb='1'; pic.src=img.getAttribute('src'); } };
+  pic.dataset.fb='0';
+  pic.src=src;
+}
+let lastMeta={};
+function refreshRight(){
+  const el=document.getElementById('liveList');
+  if(view==='cam'){
+    const rows=lastMeta.faces||[];
+    el.innerHTML=`<div class="hint">в кадре ${rows.length}</div>`+(rows.length?rows.map(eventRow).join(''):'<div class="hint">лиц нет</div>');
+  }else if(view==='home' || view==='gallery' || view==='admin'){
+    const rows=lastMeta.recent||[];
+    el.innerHTML=rows.length?rows.map(eventRow).join(''):'<div class="hint">событий пока нет</div>';
+  }
+}
+async function refreshMeta(){
+  try{
+    const url=view==='cam'&&previewIndex!=null?('/api/meta?cam='+previewIndex):'/api/meta';
+    const [j, hw]=await Promise.all([jget(url, 4000), jget('/api/hw', 4000).catch(()=>({}))]);
+    lastMeta=j;
+    if(j.analytics) analytics=j.analytics;
+    if(view==='cam' && camSet!=null){
+      const cs=(analytics.faces||{}).camera_settings||{};
+      if(cs[String(camSet)]){ camSetSettings=cs[String(camSet)]; paintCamSettings(); }
+    }
+    const next={}; (j.slots||[]).forEach(s=>{ if(s.open) next[s.index]=true; }); openSlots=next;
+    if(Array.isArray(j.cameras)) cameras=j.cameras;
+    paintSvc();
+    if(hw.hw) paintHw(hw.hw);
+    if(Date.now()>statusUntil) document.getElementById('status').textContent='OK';
+    if(view==='cam'){
+      document.getElementById('fps').textContent=
+        (j.capture_fps!=null && j.capture_fps>0)?j.capture_fps:(j.fps!=null?j.fps:'-');
+      document.getElementById('streamOpen').textContent=j.open?'OK':'…';
+      paintConf();
+    }
+    if(view==='home' && !camDeleteBusy) renderCams();
+    refreshRight();
+  }catch(e){ document.getElementById('status').textContent='нет связи'; }
+}
+
+/* ---------- картотека ---------- */
+async function loadGallery(){
+  const q=document.getElementById('galQ').value.trim();
+  const j=await jget('/api/gallery'+(q?('?q='+enc(q)):'')).catch(()=>({}));
+  const people=j.people||[];
+  galleryPeople=people;
+  const offN=people.filter(x=>x.excluded).length;
+  const arcN=people.reduce((s,p)=>s+(p.embeddings_arc||0),0);
+  const adaN=people.reduce((s,p)=>s+(p.embeddings_ada||0),0);
+  document.getElementById('galHead').textContent='в базе: '+people.length+' чел.'+(offN?(' · исключено '+offN):'')+' · Arc '+arcN+' · Ada '+adaN;
+  document.getElementById('galleryList').innerHTML=people.length?people.map(p=>{
+    const a=p.attrs||{};
+    const bits=[a.iin?('ИИН '+a.iin):'', a.dob].filter(Boolean).join(' · ');
+    const key=enc(p.name);
+    const embBits='Arc '+(p.embeddings_arc||0)+' · Ada '+(p.embeddings_ada||0);
+    return `<div class="gal-card${p.excluded?' off':''}">
+      ${p.thumb?`<img src="${esc(p.thumb)}" loading="lazy" alt="">`:'<div style="height:140px;background:#111"></div>'}
+      <div class="cap"><b>${esc(p.display)}</b>
+        <div class="hint" style="margin:4px 0 0">${esc(bits||'—')}</div>
+        <div class="hint" style="margin:2px 0 0">фото ${p.photos||0} · ${embBits}${p.observed?` · с камер ${p.observed}`:''}</div>
+        <label class="gal-excl" title="Карточка остаётся, но при распознавании не учитывается — пока не замените фото"><input type="checkbox" ${p.excluded?'checked':''} onchange="toggleExcluded(decodeURIComponent('${key}'), this)"> исключить из распознавания</label>
+        <div class="row">
+          <button class="btn" type="button" onclick="showRoute('p:'+decodeURIComponent('${key}'))">Маршрут</button>
+          <button class="btn" type="button" onclick="openEditPerson(decodeURIComponent('${key}'))">Изменить</button>
+          <button class="btn danger" type="button" onclick="delPerson(decodeURIComponent('${key}'))">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="hint">база пуста — добавьте фото слева</div>';
+}
+async function toggleExcluded(name, cb){
+  const want=cb.checked;
+  cb.disabled=true;
+  const j=await jpost('/api/gallery/'+enc(name),{excluded:want}).catch(e=>({ok:false,error:String(e)}));
+  cb.disabled=false;
+  if(!j.ok){ cb.checked=!want; alert(j.error||'не удалось'); return; }
+  const card=cb.closest('.gal-card'); if(card) card.classList.toggle('off', !!j.excluded);
+  const p=galleryPeople.find(x=>x.name===name); if(p) p.excluded=!!j.excluded;
+  const head=document.getElementById('galHead');
+  const off=galleryPeople.filter(x=>x.excluded).length;
+  if(head) head.textContent='в базе: '+galleryPeople.length+' чел.'+(off?(' · исключено '+off):'');
+}
+async function uploadPerson(){
+  const out=document.getElementById('uploadOut');
+  const files=[...document.getElementById('personFile').files];
+  const val=id=>document.getElementById(id).value.trim();
+  const body={last_name:val('personLast'), first_name:val('personFirst'), patronymic:val('personPat'), iin:val('personIin')};
+  if(!files.length){ out.textContent='выберите фото'; return; }
+  if(!body.last_name || !body.first_name){ out.textContent='укажите фамилию и имя'; return; }
+  out.textContent='считаю эмбеддинг…';
+  body.image_b64=await fileToB64(files[0]);
+  const j=await jpost('/api/gallery', body).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ out.textContent=j.error||'ошибка'; return; }
+  let extra=0;
+  if(files.length>1){
+    const images_b64=[];
+    for(const f of files.slice(1)) images_b64.push(await fileToB64(f));
+    const add=await jpost('/api/gallery/'+enc(j.name)+'/photos', {images_b64}).catch(()=>({}));
+    extra=add.added||0;
+  }
+  out.textContent='в базе: '+(j.display||j.name)+(extra?(' · ещё фото +'+extra):'')+' · векторов '+(j.embeddings||'?');
+  ['personFile','personLast','personFirst','personPat','personIin'].forEach(id=>document.getElementById(id).value='');
+  loadGallery();
+}
+async function searchFace(){
+  const f=document.getElementById('searchFile').files[0];
+  const out=document.getElementById('searchOut');
+  if(!f){ out.textContent='выберите фото'; return; }
+  out.textContent='ищу…';
+  const j=await jpost('/api/search',{image_b64:await fileToB64(f), top_k:5}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ out.textContent=j.error||'ошибка'; return; }
+  const m=(j.matches||[]).map(x=>`${x.display} ${Math.round(x.similarity*100)}%`).join(', ');
+  out.textContent=(j.face_found?'':'лицо не найдено · ')+(j.match?'совпадение: ':'похожие: ')+(m||'пусто');
+}
+async function delPerson(name){
+  if(!confirm('Удалить карточку?')) return;
+  const j=await jdel('/api/gallery/'+enc(name)).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ alert(j.error||'не удалось удалить'); return; }
+  loadGallery();
+}
+async function delAllPersons(){
+  if(!galleryPeople.length) return;
+  if(!confirm('Удалить ВСЕ карточки из базы? Это нельзя отменить.')) return;
+  const j=await jdel('/api/gallery').catch(()=>({ok:false}));
+  if(!j.ok){ alert(j.error||'не удалось удалить'); return; }
+  loadGallery();
+}
+function rebuildGalleryEmb(){
+  if(!galleryPeople.length){ setStatus('картотека пуста'); return; }
+  ask(
+    'Пересобрать эмбеддинги',
+    'Для всех карточек заново посчитаются векторы ArcFace и AdaFace по фото. Потоки камер на время остановятся, затем включатся снова. Это может занять несколько минут.',
+    async function(){
+      const btn=document.getElementById('galRebuildBtn');
+      const out=document.getElementById('galRebuildOut');
+      if(btn) btn.disabled=true;
+      if(out) out.textContent='считаю ArcFace + AdaFace по всей картотеке… потоки временно выключены';
+      setStatus('пересборка эмбеддингов…', 120000);
+      const j=await jpost('/api/admin/gallery/rebuild',{backends:['arcface','adaface'], n_aug:6}, 1800000)
+        .catch(e=>({ok:false,error:String(e)}));
+      if(btn) btn.disabled=false;
+      if(!j.ok){
+        if(out) out.textContent=j.error||'не удалось пересобрать';
+        setStatus('ошибка пересборки');
+        return;
+      }
+      const fail=(j.failed||[]).length;
+      const msg='готово: '+j.people+' чел. · Arc '+j.vectors_arc+' · Ada '+j.vectors_ada
+        +(fail?(' · без лица: '+fail):'');
+      if(out) out.textContent=msg;
+      setStatus(msg, 12000);
+      if(analytics.faces) analytics.faces.enabled=true;
+      paintSvc();
+      loadGallery();
+    }
+  );
+}
+function closeEditPerson(){ document.getElementById('editPersonModal').classList.remove('show'); }
+function openEditPerson(name){
+  const p=galleryPeople.find(x=>x.name===name)||{};
+  const a=p.attrs||{};
+  const set=(id,v)=>document.getElementById(id).value=v||'';
+  set('editPersonName', name); set('editLast', a.last_name); set('editFirst', a.first_name); set('editPat', a.patronymic);
+  set('editIin', a.iin); set('editDob', a.dob); set('editPersonFile', '');
+  document.getElementById('editPersonErr').textContent='';
+  const items=(p.photo_items||[]).filter(x=>x.kind!=='synth').slice(0,6);
+  document.getElementById('editPhotoStrip').innerHTML=items.length
+    ? items.map(it=>`<figure><img src="${esc(it.url)}" alt=""><figcaption>${esc(it.tag||'')}</figcaption></figure>`).join('')
+    : '<div class="hint">фото нет</div>';
+  document.getElementById('editPersonModal').classList.add('show');
+}
+async function saveEditPerson(){
+  const name=document.getElementById('editPersonName').value;
+  const err=document.getElementById('editPersonErr');
+  const val=id=>document.getElementById(id).value.trim();
+  const body={last_name:val('editLast'), first_name:val('editFirst'), patronymic:val('editPat'), iin:val('editIin'), dob:val('editDob')};
+  const photo=document.getElementById('editPersonFile').files[0];
+  err.textContent=photo?'считаю эмбеддинг нового фото…':'сохраняю…';
+  if(photo) body.image_b64=await fileToB64(photo);
+  const j=await jpost('/api/gallery/'+enc(name), body).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ err.textContent=j.error||'ошибка'; return; }
+  closeEditPerson();
+  loadGallery();
+}
+
+/* ---------- отчёты и журнал ---------- */
+const charts={};
+const chartOpt={plugins:{legend:{labels:{color:'#8b95a8'}}}, scales:{x:{ticks:{color:'#8b95a8', maxTicksLimit:10}}, y:{ticks:{color:'#8b95a8'}, beginAtZero:true}}, animation:false};
+function paintChart(id, cfg){
+  const c=document.getElementById(id);
+  if(typeof Chart==='undefined') return;
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(c, cfg);
+}
+async function loadReport(){
+  const iv=document.getElementById('rptInterval').value;
+  const j=await jget('/api/analytics/report?hours='+statsHours+'&interval='+iv).catch(()=>({}));
+  const s=j.summary||{};
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set('stHits', s.total||0); set('stKnown', s.known||0); set('stUnk', s.unknown||0);
+  set('stRate', (s.success_rate||0)+'%'); set('stSim', Number(s.average_confidence||0).toFixed(2)); set('stPeople', s.people||0);
+  const series=j.series||[];
+  paintChart('chartAlerts',{type:'bar', data:{labels:series.map(b=>b.t), datasets:[
+    {label:'из картотеки', data:series.map(b=>b.known), backgroundColor:'#3dd68c', stack:'a'},
+    {label:'неизвестные', data:series.map(b=>b.unknown), backgroundColor:'#fb923c', stack:'a'}
+  ]}, options:{...chartOpt, scales:{x:{...chartOpt.scales.x, stacked:true}, y:{...chartOpt.scales.y, stacked:true}}}});
+  const hour=j.by_hour||{};
+  const hl=[...Array(24).keys()].map(String);
+  paintChart('chartHour',{type:'bar', data:{labels:hl, datasets:[{label:'события', data:hl.map(h=>hour[h]||0), backgroundColor:'#e8b84a'}]}, options:{...chartOpt, plugins:{legend:{display:false}}}});
+  const people=j.persons||[];
+  const row=p=>`onclick="showRoute('p:'+decodeURIComponent('${enc(p.person_name)}'))"`;
+  document.getElementById('rptPeople').innerHTML=people.length?people.map(p=>`<tr ${row(p)}><td>${esc(p.display)}</td><td>${esc(p.iin||'—')}</td><td>${p.n}</td><td>${Number(p.avg_confidence||0).toFixed(2)}</td><td>${esc(fmtTime(p.last_seen))}</td></tr>`).join(''):'<tr><td colspan="5" class="hint">нет данных за период</td></tr>';
+  document.getElementById('liveList').innerHTML=people.length?people.map(p=>`<div class="item click" ${row(p)}><b>${esc(p.display)}</b><div class="hint">${p.n} появл. · ${esc(fmtTime(p.last_seen))} · маршрут →</div></div>`).join(''):'<div class="hint">пока пусто</div>';
+}
+function alParams(){
+  const p=new URLSearchParams({hours:String(statsHours)});
+  const k=document.getElementById('alKind').value; if(k) p.set('kind', k);
+  const q=document.getElementById('alQ').value.trim(); if(q) p.set('q', q);
+  return p.toString();
+}
+function exportAlerts(){ location.href='/api/alerts/export.csv?'+alParams(); }
+async function loadAlertJournal(){
+  if(view!=='stats' || statsKind!=='alerts') return;
+  const j=await jget('/api/alerts?'+alParams()).catch(()=>({}));
+  const rows=j.alerts||[];
+  document.getElementById('alHead').textContent=(j.total||0)+' записей'+(rows.length>=300?' (показаны последние 300)':'');
+  document.getElementById('alList').innerHTML=rows.length?rows.map(h=>`<div class="alert-row">
+      ${h.thumb?`<img src="${esc(h.thumb)}" alt="">`:'<div class="ph"></div>'}
+      ${h.gallery_thumb?`<img src="${esc(h.gallery_thumb)}" alt="">`:'<div class="ph"></div>'}
+      <div>
+        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" class="al-ck" value="${h.id}"><b>${esc(h.display)}</b>${kindPill(h.kind)}</label>
+        <div class="hint">${esc(fmtTime(h.ts))} · ${esc(h.camera||'')}${h.similarity!=null&&h.kind==='known'?(' · '+Math.round(h.similarity*100)+'%'):''}${h.iin?(' · ИИН '+esc(h.iin)):''}${h.track_id!=null?(' · трек #'+h.track_id):''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">${h.subject?`<button class="btn sm" type="button" onclick="showRoute('${esc(h.subject)}')">Маршрут</button>`:''}${reviewBtn(h)}</div>
+    </div>`).join(''):'<div class="hint">нет событий за период</div>';
+  document.getElementById('liveList').innerHTML='<div class="hint">отметьте записи и нажмите «Удалить выбранные» · «Маршрут» — путь человека на карте</div>';
+}
+async function bulkDelAlerts(){
+  const ids=[...document.querySelectorAll('.al-ck:checked')].map(x=>Number(x.value)).filter(Boolean);
+  if(!ids.length){ alert('отметьте записи'); return; }
+  if(!confirm('Удалить '+ids.length+' записей?')) return;
+  const j=await jpost('/api/alerts/bulk-delete',{ids}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ alert(j.error||'не удалось удалить'); return; }
+  loadAlertJournal();
+}
+async function clearJournal(){
+  const j=await jpost('/api/alerts/clear',{}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ setStatus(j.error||'не удалось очистить'); return; }
+  lastMeta.recent=[];
+  refreshRight();
+  if(view==='stats' && statsKind==='alerts') loadAlertJournal();
+  setStatus('события очищены', 5000);
+}
+function clearEventsPanel(){
+  ask('Очистить события', 'Список справа и журнал очистятся. Маршруты на карте останутся.', clearJournal);
+}
+
+function unkFace(url){
+  return url?`<img src="${esc(url)}" alt="">`:`<span class="unk-ph">нет фото</span>`;
+}
+/* ---------- система ---------- */
+async function loadUsers(){
+  const j=await jget('/api/admin/users').catch(()=>({ok:false}));
+  const box=document.getElementById('userList');
+  const out=document.getElementById('userOut');
+  if(!box) return;
+  if(!j.ok){ if(out) out.textContent=j.error||'не удалось загрузить пользователей'; return; }
+  const users=j.users||[];
+  const roleName={admin:'администратор', operator:'оператор'};
+  box.innerHTML=users.length?users.map(u=>`<div class="row" style="margin:6px 0">
+      <b style="flex:1;min-width:80px">${esc(u.name)}</b>
+      <select onchange="changeUserRole('${esc(u.name)}', this.value)">
+        ${['admin','operator'].map(r=>`<option value="${r}"${r===u.role?' selected':''}>${roleName[r]}</option>`).join('')}
+      </select>
+      <input type="password" placeholder="новый пароль" autocomplete="new-password" data-user="${esc(u.name)}" style="flex:1">
+      <button class="btn sm" type="button" onclick="changeUserPass(this)">Сменить</button>
+    </div>`).join(''):'<div class="hint">пользователей нет</div>';
+}
+async function changeUserRole(name, role){
+  const out=document.getElementById('userOut');
+  const j=await jpost('/api/admin/users/role',{name, role}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ if(out) out.textContent=j.error||'не удалось сменить роль'; loadUsers(); return; }
+  if(out) out.textContent='роль «'+name+'» изменена';
+  loadUsers();
+}
+async function addUser(){
+  const out=document.getElementById('userOut');
+  const name=document.getElementById('userName').value.trim();
+  const password=document.getElementById('userPass').value;
+  const role=document.getElementById('userRole').value||'operator';
+  const j=await jpost('/api/admin/users',{name, password, role}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ if(out) out.textContent=j.error||'не удалось добавить'; return; }
+  document.getElementById('userName').value='';
+  document.getElementById('userPass').value='';
+  if(out) out.textContent='добавлен «'+name+'»';
+  loadUsers();
+}
+async function changeUserPass(btn){
+  const out=document.getElementById('userOut');
+  const row=btn.parentNode;
+  const input=row.querySelector('input');
+  const name=input.getAttribute('data-user')||'';
+  const j=await jpost('/api/admin/users/password',{name, password:input.value}).catch(e=>({ok:false,error:String(e)}));
+  if(!j.ok){ if(out) out.textContent=j.error||'не удалось сменить'; return; }
+  input.value='';
+  if(out) out.textContent='пароль «'+name+'» изменён';
+}
+async function applyRole(){
+  const me=await jget('/api/me').catch(()=>({}));
+  // класс на body: скрывает и динамические кнопки, которые перерисовываются через innerHTML
+  document.body.classList.toggle('operator', me.role!=='admin');
+}
+applyRole();
+async function loadSys(){
+  loadUsers();
+  const o=await jget('/api/options').catch(()=>({}));
+  const setv=(id,v)=>document.getElementById(id).value=v;
+  const setc=(id,v)=>document.getElementById(id).checked=!!v;
+  setv('optSkip', o.frame_skip??3);
+  setv('optMaxFaces', o.max_faces_per_frame??10);
+  setv('optCooldown', o.alert_cooldown_seconds??60);
+  setc('optKnown', o.alert_known!==false);
+  setc('optUnk', !!o.alert_unknown);
+  setc('optSnap', o.save_snapshots!==false);
+  document.getElementById('sysOut').textContent='';
+}
+async function saveSys(){
+  const num=(id,d)=>Number(document.getElementById(id).value||d);
+  const body={
+    frame_skip:Math.max(1,num('optSkip',3)),
+    max_faces_per_frame:num('optMaxFaces',10),
+    alert_cooldown_seconds:num('optCooldown',60),
+    alert_known:document.getElementById('optKnown').checked,
+    alert_unknown:document.getElementById('optUnk').checked,
+    save_snapshots:document.getElementById('optSnap').checked
+  };
+  const j=await jpost('/api/options', body).catch(()=>({ok:false}));
+  document.getElementById('sysOut').textContent=j.ok===false?'ошибка':'сохранено';
+}
+
+/* ---------- карта движения ---------- */
+let floorMeta={floors:[], cameras:{}, floor:{}, has_image:false};
+let floorTracks=[];
+let floorSel='';
+let floorPlace=null;
+let floorAim=null;
+let floorDrag=null;
+const fCanvas=document.getElementById('floorCanvas');
+const fImg=document.getElementById('floorImg');
+function showRoute(subject){ floorSel=subject||''; openStats('map'); }
+function floorRect(){
+  const W=fCanvas.clientWidth, H=fCanvas.clientHeight;
+  if(!floorMeta.has_image || !fImg.naturalWidth) return {x:0,y:0,w:W,h:H};
+  const s=Math.min(W/fImg.naturalWidth, H/fImg.naturalHeight);
+  const w=fImg.naturalWidth*s, h=fImg.naturalHeight*s;
+  return {x:(W-w)/2, y:(H-h)/2, w, h};
+}
+function toPx(p){ const r=floorRect(); return [r.x+p.x*r.w, r.y+p.y*r.h]; }
+function toPlan(ev){
+  const b=fCanvas.getBoundingClientRect(), r=floorRect();
+  return {x:Math.min(1,Math.max(0,(ev.clientX-b.left-r.x)/r.w)), y:Math.min(1,Math.max(0,(ev.clientY-b.top-r.y)/r.h))};
+}
+function subjColor(t){
+  if(t.kind!=='known') return '#fb923c';
+  let h=0; for(const c of t.subject) h=(h*31+c.charCodeAt(0))>>>0;
+  return `hsl(${h%360} 75% 62%)`;
+}
+async function loadFloorplan(fid){
+  const j=await jget('/api/floorplan'+(fid?('?floor='+enc(fid)):'')).catch(()=>null);
+  if(!j || !j.ok) return;
+  floorMeta=j;
+  document.getElementById('floorName').value=j.floor.name||'';
+  document.getElementById('floorTabs').innerHTML=j.floors.map(f=>`<button class="btn ${f.id===j.active?'ok':''}" type="button" onclick="selectFloor('${esc(f.id)}')">${esc(f.name)}<span class="hint" style="margin:0">${f.cameras}</span></button>`).join('');
+  if(j.has_image){ fImg.src='/api/floorplan/image?floor='+enc(j.active)+'&t='+Date.now(); fImg.classList.remove('hidden'); }
+  else { fImg.removeAttribute('src'); fImg.classList.add('hidden'); }
+  renderFloorCams();
+  await loadFloorTracks();
+}
+function normCam(p){
+  const c=p||{};
+  let h=Number(c.heading)||0; h=((h%360)+360)%360;
+  return {x:Math.min(1,Math.max(0,Number(c.x)||0)), y:Math.min(1,Math.max(0,Number(c.y)||0)), heading:h, fov:Math.max(20,Math.min(170,Number(c.fov)||80)), range_m:Math.max(1,Math.min(80,Number(c.range_m)||8))};
+}
+function headingFrom(ax,ay,bx,by){ return (Math.atan2(bx-ax, ay-by)*180/Math.PI+360)%360; }
+function camRangePlan(cam){ return Math.max(0.05, Math.min(0.45, (Number(cam.range_m)||8)/8*0.14)); }
+function fovPoint(cam, ang, dist){
+  const a=ang*Math.PI/180;
+  return {x:cam.x+Math.sin(a)*dist, y:cam.y-Math.cos(a)*dist};
+}
+function fovHandles(cam){
+  const R=camRangePlan(cam), h=cam.heading, half=cam.fov/2;
+  return {tip:fovPoint(cam,h,R), left:fovPoint(cam,h-half,R), right:fovPoint(cam,h+half,R)};
+}
+function renderFloorCams(){
+  const placed=floorMeta.cameras||{};
+  document.getElementById('floorCamList').innerHTML=cameras.length?cameras.map(c=>{
+    const here=placed[String(c.index)];
+    const on=floorPlace===c.index || floorAim===c.index;
+    const deg=here?Math.round(normCam(here).heading):null;
+    return `<div class="fp-cam ${on?'on':''}"><span>${esc(c.name)} ${here?`<span class="muted">${deg}°</span>`:'<span class="muted">— не на плане</span>'}</span>
+      <button class="btn sm ${on?'ok':''}" type="button" onclick="placeCam(${c.index})">${on&&floorPlace===c.index?'кликните по плану':(here?'Переставить':'Поставить')}</button>
+      ${here?`<button class="btn sm" type="button" onclick="aimCam(${c.index})">Направление</button>`:''}
+      ${here?`<button class="btn sm danger" type="button" onclick="removeFloorCam(${c.index})">✕</button>`:''}</div>`;
+  }).join(''):'<div class="hint">камер нет</div>';
+  document.getElementById('floorStage').classList.toggle('placing', floorPlace!=null);
+  renderCamDir();
+}
+function aimCam(idx){
+  floorPlace=null;
+  floorAim=(floorAim===idx)?null:idx;
+  renderFloorCams();
+  paintFloor();
+}
+function renderCamDir(){
+  const box=document.getElementById('floorCamProps');
+  const raw=floorAim!=null?(floorMeta.cameras||{})[String(floorAim)]:null;
+  box.classList.toggle('hidden', !raw);
+  if(!raw) return;
+  const cam=normCam(raw);
+  document.getElementById('floorCamPropsTitle').textContent='Направление: '+camName(floorAim);
+  const h=document.getElementById('camHeadIn'), f=document.getElementById('camFovIn'), r=document.getElementById('camRangeIn');
+  if(document.activeElement!==h) h.value=Math.round(cam.heading);
+  if(document.activeElement!==f) f.value=Math.round(cam.fov);
+  if(document.activeElement!==r) r.value=cam.range_m;
+}
+function applyCamDir(){
+  if(floorAim==null) return;
+  const cams={...floorMeta.cameras};
+  const cam=normCam(cams[String(floorAim)]);
+  cam.heading=Number(document.getElementById('camHeadIn').value);
+  cam.fov=Number(document.getElementById('camFovIn').value);
+  cam.range_m=Number(document.getElementById('camRangeIn').value);
+  cams[String(floorAim)]=normCam(cam);
+  saveFloorCams(cams);
+}
+function placeCam(idx){ floorPlace=(floorPlace===idx)?null:idx; renderFloorCams(); }
+async function saveFloorCams(cams){
+  const j=await jpost('/api/floorplan/cameras',{floor:floorMeta.active, cameras:cams}).catch(()=>null);
+  if(j && j.ok){ floorMeta.cameras=j.cameras; floorMeta.floors=j.floors; }
+  renderFloorCams();
+  loadFloorTracks();
+}
+function removeFloorCam(idx){
+  const c={...floorMeta.cameras}; delete c[String(idx)];
+  if(String(floorAim)===String(idx)) floorAim=null;
+  saveFloorCams(c);
+}
+function hitCam(ev){
+  const b=fCanvas.getBoundingClientRect();
+  const x=ev.clientX-b.left, y=ev.clientY-b.top;
+  for(const [k,p] of Object.entries(floorMeta.cameras||{})){
+    const [px,py]=toPx(p);
+    if((px-x)**2+(py-y)**2<=14*14) return k;
+  }
+  return null;
+}
+function hitHandle(ev){
+  if(floorAim==null) return null;
+  const cam=normCam((floorMeta.cameras||{})[String(floorAim)]);
+  const b=fCanvas.getBoundingClientRect();
+  const x=ev.clientX-b.left, y=ev.clientY-b.top;
+  const h=fovHandles(cam);
+  for(const k of ['tip','left','right']){
+    const [px,py]=toPx(h[k]);
+    if((px-x)**2+(py-y)**2<=12*12) return k;
+  }
+  return null;
+}
+fCanvas.addEventListener('mousedown', ev=>{
+  if(floorPlace!=null){
+    const c={...floorMeta.cameras};
+    const p=toPlan(ev);
+    c[String(floorPlace)]=normCam({...(c[String(floorPlace)]||{}), x:p.x, y:p.y});
+    floorAim=floorPlace; floorPlace=null; saveFloorCams(c); return;
+  }
+  const handle=hitHandle(ev);
+  if(handle){ floorDrag={kind:handle, idx:String(floorAim)}; return; }
+  const k=hitCam(ev);
+  if(k){ floorAim=Number(k); floorDrag={kind:'move', idx:k}; renderFloorCams(); paintFloor(); return; }
+  if(floorAim!=null){ floorAim=null; renderFloorCams(); paintFloor(); }
+});
+fCanvas.addEventListener('mousemove', ev=>{
+  if(!floorDrag){
+    fCanvas.style.cursor=hitHandle(ev)?'crosshair':(hitCam(ev)?'grab':'');
+    return;
+  }
+  const p=toPlan(ev);
+  if(floorDrag.kind==='move'){
+    floorMeta.cameras[floorDrag.idx]={...floorMeta.cameras[floorDrag.idx], x:p.x, y:p.y};
+    paintFloor();
+    return;
+  }
+  const cam=normCam(floorMeta.cameras[floorDrag.idx]);
+  if(floorDrag.kind==='tip'){
+    cam.heading=headingFrom(cam.x, cam.y, p.x, p.y);
+    cam.range_m=Math.max(1, Math.min(80, Math.hypot(p.x-cam.x, p.y-cam.y)/0.14*8));
+  }else{
+    const a=headingFrom(cam.x, cam.y, p.x, p.y);
+    const diff=Math.abs(((a-cam.heading+540)%360)-180);
+    cam.fov=Math.max(20, Math.min(170, diff*2));
+  }
+  floorMeta.cameras[floorDrag.idx]=normCam(cam);
+  renderCamDir();
+  paintFloor();
+});
+window.addEventListener('mouseup', ()=>{ if(floorDrag){ floorDrag=null; saveFloorCams({...floorMeta.cameras}); } });
+window.addEventListener('keydown', ev=>{
+  if(view!=='stats' || statsKind!=='map' || floorAim==null) return;
+  if(ev.target && /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)) return;
+  const cams={...floorMeta.cameras};
+  const cam=normCam(cams[String(floorAim)]);
+  let hit=false;
+  if(ev.key==='ArrowLeft'){ cam.heading-=5; hit=true; }
+  if(ev.key==='ArrowRight'){ cam.heading+=5; hit=true; }
+  if(ev.key==='ArrowUp'){ cam.range_m+=0.5; hit=true; }
+  if(ev.key==='ArrowDown'){ cam.range_m-=0.5; hit=true; }
+  if(!hit) return;
+  ev.preventDefault();
+  cams[String(floorAim)]=normCam(cam);
+  floorMeta.cameras=cams;
+  renderCamDir(); paintFloor();
+  saveFloorCams(cams);
+});
+fImg.addEventListener('load', paintFloor);
+window.addEventListener('resize', ()=>{ if(view==='stats'&&statsKind==='map') paintFloor(); });
+async function selectFloor(id){ await jpost('/api/floorplan/floors/select',{id}).catch(()=>{}); loadFloorplan(id); }
+async function addFloor(){ const j=await jpost('/api/floorplan/floors',{}).catch(()=>null); if(j&&j.ok) loadFloorplan(j.active); }
+async function deleteFloor(){
+  if(!confirm('Удалить этаж «'+(floorMeta.floor.name||'')+'» вместе с планом?')) return;
+  const j=await jpost('/api/floorplan/floors/delete',{id:floorMeta.active}).catch(()=>({}));
+  if(!j.ok){ alert(j.error||'не удалось'); return; }
+  loadFloorplan(j.active);
+}
+async function renameFloor(){
+  const j=await jpost('/api/floorplan/floors/rename',{id:floorMeta.active, name:document.getElementById('floorName').value}).catch(()=>null);
+  if(j&&j.ok) loadFloorplan(j.active);
+}
+async function uploadFloorPlan(){
+  const f=document.getElementById('floorFile').files[0];
+  if(!f) return;
+  const j=await jpost('/api/floorplan/image',{floor:floorMeta.active, image_b64:await fileToB64(f)}).catch(e=>({ok:false,error:String(e)}));
+  document.getElementById('floorFile').value='';
+  if(!j.ok){ alert(j.error||'не удалось загрузить'); return; }
+  loadFloorplan(j.active);
+}
+async function loadFloorTracks(){
+  if(view!=='stats' || statsKind!=='map') return;
+  const p=new URLSearchParams({hours:String(statsHours), floor:floorMeta.active||'', unknown:document.getElementById('mapUnknown').checked?'1':'0'});
+  const j=await jget('/api/floorplan/tracks?'+p).catch(()=>({}));
+  floorTracks=j.tracks||[];
+  if(floorSel && !floorTracks.some(t=>t.subject===floorSel)) floorSel='';
+  const placed=Object.keys(floorMeta.cameras||{}).length;
+  document.getElementById('floorTrackHint').textContent=placed
+    ? `за период: из картотеки ${j.known||0}, неизвестных ${j.unknown||0} · клик по человеку справа — его маршрут`
+    : 'поставьте камеры на план слева — маршруты появятся по их позициям';
+  paintFloor();
+  renderTrackList();
+}
+function renderTrackList(){
+  const el=document.getElementById('liveList');
+  if(!floorTracks.length){ el.innerHTML='<div class="hint">за период никого не видели</div>'; return; }
+  el.innerHTML=floorTracks.map(t=>{
+    const sel=t.subject===floorSel;
+    const cams=[...new Set(t.visits.map(v=>v.camera))];
+    let html=`<div class="item click ${sel?'sel':''}" onclick="pickTrack('${esc(t.subject)}')">
+      <div class="det"><div class="det-photos"><div class="det-shot">${t.thumb?`<img src="${esc(t.thumb)}" alt="">`:`<div class="ph" style="border-color:${subjColor(t)}">${t.kind==='known'?'':'?'}</div>`}</div></div>
+      <div class="det-meta"><b style="color:${subjColor(t)}">${esc(t.display)}</b>${kindPill(t.kind)}
+      <div class="hint">${cams.length} кам. · ${t.visits.length} визит. · последний раз ${esc(fmtTime(t.last_ts))} — ${esc(t.last_camera)}${t.also_floors.length?(' · ещё на: '+esc(t.also_floors.join(', '))):''}</div></div></div></div>`;
+    if(sel){
+      html+=t.visits.slice().reverse().map((v,i)=>`<div class="visit"><span>${t.visits.length-i}</span><span>${esc(v.camera)}${v.floor?(' <span class="hint">· '+esc(v.floor)+'</span>'):''}<br><span class="hint">${esc(fmtTime(v.t_in))} → ${esc(fmtTime(v.t_out))}</span></span><i>${fmtDur(v.t_out-v.t_in)}</i></div>`).join('');
+    }
+    return html;
+  }).join('');
+}
+function pickTrack(s){ floorSel=(floorSel===s)?'':s; paintFloor(); renderTrackList(); }
+function paintFov(g, cam, sel){
+  const origin=toPx(cam);
+  const half=cam.fov/2, dist=camRangePlan(cam);
+  g.beginPath(); g.moveTo(origin[0], origin[1]);
+  for(let i=0;i<=24;i++){
+    const pt=toPx(fovPoint(cam, cam.heading-half+(2*half)*i/24, dist));
+    g.lineTo(pt[0], pt[1]);
+  }
+  g.closePath();
+  g.fillStyle=sel?'rgba(61,214,140,.22)':'rgba(94,200,255,.12)';
+  g.fill();
+  g.strokeStyle=sel?'rgba(61,214,140,.8)':'rgba(94,200,255,.45)';
+  g.lineWidth=sel?1.6:1; g.stroke();
+}
+function paintFloor(){
+  const W=fCanvas.clientWidth, H=fCanvas.clientHeight;
+  if(!W||!H) return;
+  const dpr=window.devicePixelRatio||1;
+  fCanvas.width=W*dpr; fCanvas.height=H*dpr;
+  const g=fCanvas.getContext('2d');
+  g.setTransform(dpr,0,0,dpr,0,0);
+  g.clearRect(0,0,W,H);
+  const r=floorRect();
+  if(!floorMeta.has_image){
+    g.strokeStyle='#1b2130'; g.lineWidth=1;
+    for(let x=0;x<=W;x+=40){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke(); }
+    for(let y=0;y<=H;y+=40){ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
+  }
+  const list=floorSel?floorTracks.filter(t=>t.subject===floorSel):floorTracks;
+  list.forEach((t,ti)=>{
+    const pts=t.points.map(p=>toPx(p));
+    if(!pts.length) return;
+    const col=subjColor(t);
+    const off=floorSel?0:((ti%7)-3)*3;
+    g.strokeStyle=col; g.fillStyle=col;
+    g.lineWidth=floorSel?3.5:2;
+    g.globalAlpha=floorSel?1:0.75;
+    g.setLineDash(t.kind==='known'?[]:[6,5]);
+    g.beginPath();
+    t.points.forEach((p,i)=>{
+      const [x,y]=pts[i];
+      if(i===0 || p.gap) g.moveTo(x+off,y+off); else g.lineTo(x+off,y+off);
+    });
+    g.stroke();
+    g.setLineDash([]);
+    for(let i=1;i<pts.length;i++){
+      if(t.points[i].gap) continue;
+      const [x1,y1]=pts[i-1], [x2,y2]=pts[i];
+      if(x1===x2&&y1===y2) continue;
+      const mx=(x1+x2)/2+off, my=(y1+y2)/2+off, a=Math.atan2(y2-y1,x2-x1);
+      g.beginPath(); g.moveTo(mx+8*Math.cos(a),my+8*Math.sin(a));
+      g.lineTo(mx+8*Math.cos(a+2.5),my+8*Math.sin(a+2.5)); g.lineTo(mx+8*Math.cos(a-2.5),my+8*Math.sin(a-2.5)); g.fill();
+    }
+    if(floorSel){
+      g.font='600 11px "IBM Plex Sans",sans-serif';
+      pts.forEach(([x,y],i)=>{ g.fillStyle='#0a0c10'; g.beginPath(); g.arc(x+14,y-14,9,0,7); g.fill(); g.fillStyle=col; g.fillText(String(i+1), x+14-(i+1>9?6:3), y-10); });
+    }
+    const [lx,ly]=pts[pts.length-1];
+    g.globalAlpha=1; g.fillStyle=col;
+    g.beginPath(); g.arc(lx+off,ly+off,6,0,7); g.fill();
+    g.font='600 12px "IBM Plex Sans",sans-serif';
+    g.fillText(t.display, lx+off+9, ly+off+4);
+  });
+  g.globalAlpha=1;
+  for(const [k,raw] of Object.entries(floorMeta.cameras||{})){
+    const cam=normCam(raw);
+    const sel=String(floorAim)===String(k);
+    paintFov(g, cam, sel);
+    const [x,y]=toPx(cam);
+    g.fillStyle=sel?'#5ec8ff':'#0a0c10'; g.strokeStyle='#5ec8ff'; g.lineWidth=2;
+    g.beginPath(); g.arc(x,y,10,0,7); g.fill(); g.stroke();
+    g.save(); g.translate(x,y); g.rotate(cam.heading*Math.PI/180);
+    g.fillStyle='#5ec8ff';
+    g.beginPath(); g.moveTo(0,-16); g.lineTo(6,-4); g.lineTo(-6,-4); g.closePath(); g.fill();
+    g.restore();
+    g.fillStyle='#0a0c10'; g.font='700 10px "IBM Plex Mono",monospace';
+    g.fillText(k, x-(k.length>1?6:3), y+4);
+    g.fillStyle='#cfe8ff'; g.font='500 11px "IBM Plex Sans",sans-serif';
+    g.fillText(camName(k), x+14, y-12);
+    if(sel){
+      const h=fovHandles(cam);
+      [['tip','#3dd68c'],['left','#e8b84a'],['right','#e8b84a']].forEach(([name,col])=>{
+        const [hx,hy]=toPx(h[name]);
+        g.beginPath(); g.arc(hx,hy,6,0,7); g.fillStyle=col; g.fill();
+        g.strokeStyle='#fff'; g.lineWidth=1.2; g.stroke();
+      });
+    }
+  }
+  if(!Object.keys(floorMeta.cameras||{}).length){
+    g.fillStyle='#8b95a8'; g.font='500 13px "IBM Plex Sans",sans-serif';
+    g.fillText('Слева: загрузите план и поставьте камеры', r.x+20, r.y+30);
+  }
+}
+
+/* ---------- старт ---------- */
+setView('home');
+loadCams().then(refreshMeta);
+setInterval(refreshMeta, 2000);
+setInterval(()=>{ if(view!=='stats' || floorDrag) return; if(statsKind==='map') loadFloorTracks(); else loadStats(); }, 15000);
+</script>
+</body>
+</html>

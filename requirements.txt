@@ -1,0 +1,19 @@
+# qaraqu_face — production runtime (GPU)
+fastapi>=0.110
+uvicorn[standard]>=0.27
+ultralytics>=8.3
+lap>=0.5.12
+opencv-python-headless>=4.8
+numpy>=1.24
+PyYAML>=6.0
+onnxruntime-gpu>=1.17; platform_system=="Linux"
+torch>=2.1
+python-multipart>=0.0.9
+SQLAlchemy>=2.0
+psycopg[binary]>=3.1
+Jinja2>=3.1
+scipy>=1.11
+Pillow>=10
+urllib3>=2.8.0
+# setuptools: Snyk хочет >=83, но torch cu128 требует <82 — оставляем совместимый диапазон
+setuptools>=78,<82

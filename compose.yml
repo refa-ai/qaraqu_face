@@ -1,0 +1,58 @@
+# QARAQU FACE — Podman Compose
+#
+# Всё выключено по умолчанию (ни db, ни app не стартуют сами).
+#
+#   podman compose build              # собрать образ app
+#   podman compose --profile db up -d # только Postgres
+#   podman compose --profile run up -d  # db + app :5020 (QARAQU_FACE_ENABLED=1)
+#   podman compose --profile db down
+#   podman compose --profile run down
+#
+# Postgres: localhost:5433  user/pass/db = qaraqu/qaraqu/qaraqu_face
+# UI:       localhost:5020  admin/admin
+
+name: qaraqu_face
+
+services:
+  db:
+    profiles: ["db", "run"]
+    image: docker.io/library/postgres:16-alpine
+    container_name: qaraqu_face_db
+    environment:
+      POSTGRES_USER: qaraqu
+      POSTGRES_PASSWORD: qaraqu
+      POSTGRES_DB: qaraqu_face
+    ports:
+      - "5433:5432"
+    volumes:
+      - qaraqu_face_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qaraqu -d qaraqu_face"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: "no"
+
+  app:
+    profiles: ["run"]
+    build:
+      context: .
+      dockerfile: Containerfile
+    image: localhost/qaraqu_face:latest
+    container_name: qaraqu_face_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://qaraqu:qaraqu@db:5432/qaraqu_face
+      QARAQU_FACE_ENABLED: "1"
+      QARAQU_FACE_HOST: "0.0.0.0"
+      QARAQU_FACE_PORT: "5020"
+    ports:
+      - "5020:5020"
+    volumes:
+      - ./data:/app/data:z
+    restart: "no"
+
+volumes:
+  qaraqu_face_pg:

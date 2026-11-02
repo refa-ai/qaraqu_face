@@ -1,0 +1,48 @@
+project:
+  name: qaraqu_face
+  root: /data/nimda/qaraqu_face
+
+# БД: SQLite по умолчанию; в Podman — PostgreSQL через DATABASE_URL
+database:
+  sqlite_path: data/qaraqu_face.db
+  # url: postgresql+psycopg://qaraqu:qaraqu@db:5432/qaraqu_face
+
+# Детекция: YOLO — веса PyTorch, YuNet — ONNX (OpenCV FaceDetectorYN).
+detect:
+  backend: pytorch
+  weights: data/models/yolov11n-face.pt
+  yunet: data/models/face_detection_yunet_2023mar.onnx
+  imgsz: 1280
+  device: "0"
+  max_det: 300
+
+# Распознавание: имя принимается, только если ОБА движка (ArcFace и AdaFace) назвали
+# одного и того же человека (require_both). Если первый не совпал — второй не считаем.
+# Векторы лежат раздельно: embeddings.npy — ArcFace, embeddings_ada.npy — AdaFace.
+recognize:
+  backend: adaface
+  order: [arcface, adaface]
+  require_both: true   # false — прежняя логика «ИЛИ» (ArcFace, затем AdaFace)
+  gallery_dir: data/gallery
+  prefer_gpu: true
+  adaface:
+    onnx: data/models/adaface_ir101_webface12m.onnx
+    weights: data/models/adaface_ir101_webface12m.onnx
+  arcface:
+    onnx: data/models/w600k_r50.onnx
+    weights: data/models/w600k_r50.onnx
+
+# Захват: RTSP → NVDEC (PyAV CUDA), слот 25 к/с. OpenCV CAP_FFMPEG на этой сборке
+# не видит h264_cuvid и гоняет H.264 на CPU (~400 % при 50+ камерах).
+# Детекция и 1:N идут с main: sub у части камер 12–15 к/с и лица 20–40 px.
+capture:
+  decode_device: cuda  # cuda | cpu
+
+cameras:
+  store: data/cameras.json  # только для первичной миграции в БД
+
+api:
+  host: 0.0.0.0
+  port: 5020
+  user: admin
+  password: admin
